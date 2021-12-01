@@ -30,6 +30,7 @@ int main(int argc, char** argv){
         printf("%d", array[argc-3]);
         for (int i =0; i<argc-3; ++i)
             printf(" %d", array[argc - 4 - i]);
+        printf("\n");
         }   
     }    
     if (strcmp(argv[1], "char") == 0){
