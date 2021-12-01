@@ -41,6 +41,7 @@ int main(int argc, char** argv){
         printf("%c", array[argc-3]);
         for (int i =0; i<argc-3; ++i)
             printf(" %c", array[argc - 4 - i]);
+        printf("\n");
     } 
  
     // if (strcmp(argv[1], "str") == 0){
