@@ -12,16 +12,16 @@ void my_memcpy(void* dst, void* src, size_t element_size){
 void merge(void* array, size_t elements, size_t element_size, comp_t comparator){
     
     size_t middle = elements/2;
-    char* new_array = malloc(elements * element_size);
-    if (new_array == NULL)
+    char* tmp_array = malloc(elements * element_size);
+    if (tmp_array == NULL)
         exit(1);
     
     char* pntr1 = (char*)array;
     char* pntr2 = (char*)array + middle * element_size;
-    char* res = (char*)new_array;
+    char* res = (char*)tmp_array;
 
     while ((pntr1 - (char*)array < middle * element_size) && 
-    (pntr2 - (char*)array < (elements) * element_size))
+    (pntr2 - (char*)array < elements * element_size))
     {
         if (comparator(pntr1, pntr2) <= 0)
         {
@@ -42,12 +42,8 @@ void merge(void* array, size_t elements, size_t element_size, comp_t comparator)
     while (pntr2 - (char*)array < elements * element_size)
         *res++ = *pntr2++;
 
-    my_memcpy(array, new_array, elements*element_size);
-    free(new_array);
-    
-    
-   
-
+    my_memcpy(array, tmp_array, elements*element_size);
+    free(tmp_array);
 }
 
 void mergesort(void* array, size_t elements,
