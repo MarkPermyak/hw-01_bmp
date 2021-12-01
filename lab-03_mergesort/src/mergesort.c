@@ -12,6 +12,7 @@ void my_memcpy(void* dst, void* src, size_t element_size){
 void merge(void* array, size_t elements, size_t element_size, comp_t comparator){
     
     size_t middle = elements/2;
+
     char* tmp_array = malloc(elements * element_size);
     if (tmp_array == NULL)
         exit(1);
@@ -57,6 +58,4 @@ void mergesort(void* array, size_t elements,
     mergesort((char*)array + middle*element_size, (elements+1)/2, element_size, comparator);
 
     merge(array, elements, element_size, comparator);
-
-
 }
