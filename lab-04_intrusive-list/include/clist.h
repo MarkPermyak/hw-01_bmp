@@ -1,6 +1,8 @@
 #ifndef CLIST_H_
 #define CLIST_H_
 
+#define container_of(ptr, type, member) (type*)((char*)(ptr) - offsetof(type, member))
+
 struct intrusive_node {
   struct intrusive_node *next;
   struct intrusive_node *prev;

@@ -1,10 +1,13 @@
+#include "clist.h"
+
 struct point {
   int x, y;
   struct intrusive_node /* ? */ node;
 };
 
-/* ? */ add_point(intrusive_list /* ? */, int x, int y) {
-
+/* ? */ add_point(intrusive_list *l, int x, int y) {
+    point A;
+    
 }
 
 /* ? */ remove_point(intrusive_list /* ? */, int x, int y) { // removes all (x, y) pairs
@@ -20,16 +23,15 @@ struct point {
 }
 
 int main() {
-  /* usage
 
-     intrusive_list_t l;
-     init_list(&l);
+  intrusive_list_t l;
+  init_list(&l);
 
-     add_point(&l, 10, 10);
-     add_point(&l, 20, 20);
+  add_point(&l, 10, 10);
+  add_point(&l, 20, 20);
 
-     show_all_points(&l);
+  show_all_points(&l);
 
-     return 0;
-  */
+  return 0;
+
 }
