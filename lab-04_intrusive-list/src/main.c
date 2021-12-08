@@ -36,7 +36,7 @@ int main() {
     input[strlen(input) - 1] = '\0';
     
 
-    if(input[0] == 'a'){
+    if(input[0] == 'a' && input[1] == 'd' && input[2] == 'd' && input[3] == ' '){
       char num1[LINESIZE] = "";
       int i = 0;
       while(!isdigit((unsigned char)input[i]) && (input[i] != '-' ))
@@ -85,6 +85,9 @@ int main() {
           else{
             if(!strcmp(input, "exit")){
               break;
+            }
+            else{
+              printf("%s\n", "Unknown command");
             }
           }
         }  
