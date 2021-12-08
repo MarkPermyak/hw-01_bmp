@@ -32,7 +32,7 @@ int get_length(intrusive_list_t*);
 
 void add_point(intrusive_list_t*, int, int);
 void remove_point(intrusive_list_t*, int, int);
-void remove_all_points(intrusive_list_t l);
+void remove_all_points(intrusive_list_t* l);
 point_t* get_point(intrusive_node_t* node_ptr);
 void print_point(intrusive_node_t* node);
 void show_all_points(intrusive_list_t);
