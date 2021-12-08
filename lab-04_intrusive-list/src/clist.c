@@ -6,9 +6,8 @@
 
 
 void init_list(intrusive_list_t *l){
-    //l->head.prev = NULL;
+    l->head.prev = NULL;
     l->head.next = NULL;
-    list_length = 0;
 }
 
 void apply(intrusive_list_t* l, void (*func)(intrusive_node_t*)) {
@@ -25,18 +24,37 @@ void apply(intrusive_list_t* l, void (*func)(intrusive_node_t*)) {
 }
 
 void add_node(intrusive_list_t *l, point_t* new) {
-    new->node.next = NULL;
+    
 
-    intrusive_node_t* cur = &l->head;
+    
+    intrusive_node_t* first = l->head.next;
 
-    while (cur->next) {
-    cur = cur->next;
-    //printf("%s\n", "OKaddwhile");
+    l->head.next = &new->node;
+    
+
+    new->node.prev = &l->head;
+    new->node.next = first;
+    if(first)
+        first->prev = &new->node;
+
+}
+
+void remove_point(intrusive_list_t* l, point_t* new){
+    intrusive_node_t* cur = l->head.next;
+    int x = new->x;
+    int y = new->y;
+   
+    while (cur){
+        point_t* cur_point = get_point(cur);
+        
+        if(cur_point->x == x && cur_point->y == y){
+            cur->prev->next = cur->next;
+            if(cur->next)
+                cur->next->prev = cur->prev;
+        }
+        
+        cur = cur->next;
     }
-
-    cur->next = &new->node;
-    //printf("%s\n", "OKadd");
-    list_length++;
 }
 
 point_t* get_point(intrusive_node_t* node_ptr) {
@@ -47,7 +65,7 @@ void free_node(intrusive_node_t* node) {
     free(get_point(node));
 }
 
-void destroy(intrusive_list_t *l) {
+void remove_all_points(intrusive_list_t *l) {
     apply(l, free_node);
     init_list(l);
 }
@@ -58,6 +76,10 @@ void print_point(intrusive_node_t* node) {
     printf("(%d %d) ", point->x, point->y);
 }
 
+void show_all_points(intrusive_list_t l){
+    apply(&l, print_point);
+    printf("\n");
+}
 point_t* alloc_point(int x, int y){
     intrusive_node_t* node = malloc(sizeof(intrusive_node_t));
     point_t* point = malloc(sizeof(point_t));
@@ -67,6 +89,13 @@ point_t* alloc_point(int x, int y){
     return point;
 }
 
-int get_length(intrusive_list_t l){
-    return list_length;
+int get_length(intrusive_list_t* l){
+    intrusive_node_t* cur = l->head.next;
+    int length = 0;
+    while (cur){ 
+        cur = cur->next;
+        length++;
+    }
+
+    return length;
 }
