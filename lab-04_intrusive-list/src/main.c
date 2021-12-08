@@ -8,7 +8,7 @@
 
 void add_point(intrusive_list_t* l, int x, int y){
     point_t* point = malloc(sizeof(point_t));
-    intrusive_node_t* node = malloc(sizeof(intrusive_node_t));
+    intrusive_node_t* node;
     add_node(l, &point->node);
     
     point->x = x;
@@ -24,7 +24,7 @@ void remove_point(intrusive_list_t* l, int x, int y){
 
       if (cur_point->x == x && cur_point->y == y){
         remove_node(l, cur);
-        cur_point = NULL;
+        //free(cur_point);
       }
       cur = cur->next;
     }
@@ -53,65 +53,34 @@ int main() {
 
   intrusive_list_t my_list;
   init_list(&my_list);
+  char input[LINESIZE] = "";
 
   while (1)
   {
-    char input[LINESIZE] = "";
-    fgets(input, LINESIZE, stdin);
-    input[strlen(input) - 1] = '\0';
-    
+    scanf("%s", input);
+
     if (!strcmp(input, "exit")){
       break;
       return 0;
     }
+    else if (!strcmp(input, "len"))
+      printf("%d\n", get_length(&my_list));
+    else if (!strcmp(input, "print"))
+      show_all_points(my_list);
+    else if (!strcmp(input, "rma"))
+      remove_all_points(my_list);
     else{
-      if (!strcmp(input, "len"))
-            printf("%d\n", get_length(&my_list));
-      else{
-        if (!strcmp(input, "print"))
-          show_all_points(my_list);
-        else{
-          if (!strcmp(input, "rma"))
-            remove_all_points(my_list);
-          else{
-            
-              char num1[LINESIZE] = "";
-              int i = 0;
-              while(!isdigit((unsigned char)input[i]) && (input[i] != '-' ))
-                i++;
-              int j = 0;
-
-              while(input[i] != ' '){
-                num1[j] = input[i];
-                j++;
-                i++;
-              }
-              int x = atoi(num1);
-              char num2[LINESIZE] = "";
-              i++;
-              int k = 0;
-              while(input[i]){
-                num2[k] = input[i];
-                i++;
-                k++;
-              }
-              int y = atoi(num2);
-
-              if(input[0] == 'a' && input[1] == 'd' && input[2] == 'd' && input[3] == ' ')
-                add_point(&my_list, x, y);  
-              else{
-                if(input[0] == 'r' && input[1] == 'm' && input[2] == ' ')
-                  remove_point(&my_list, x, y);
-                else
-                  printf("%s\n", "Unknown command");
-              }
-            
-
-          }
-          
-        }
+      int x;
+      int y;
+      scanf("%d%d", &x,&y);
+      if(!strcmp(input, "add"))
+        add_point(&my_list, x, y);  
+      else if(!strcmp(input, "rm"))
+        remove_point(&my_list, x, y);
+      else
+        printf("%s\n", "Unknown command");
       }
-    }
+    
     fflush (stdout);
   }
   return 0;

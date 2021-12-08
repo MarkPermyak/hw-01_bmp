@@ -16,7 +16,6 @@ void apply(intrusive_list_t* l, void (*func)(intrusive_node_t*)) {
     while (cur) {
         intrusive_node_t* next = cur->next;
         func(cur);
-        //printf("%s\n", "OKapply");
 
         cur = cur->next;
     }
@@ -27,13 +26,11 @@ void add_node(intrusive_list_t *l, intrusive_node_t* new) {
     intrusive_node_t* first = l->head.next;
 
     l->head.next = new;
-    //printf("%s\n", "OK");
 
     new->prev = &l->head;
     new->next = first;
     if(first)
         first->prev = new;
-    //printf("%s\n", "OK");
 }
 
 void remove_node(intrusive_list_t* l, intrusive_node_t* del){
@@ -43,8 +40,6 @@ void remove_node(intrusive_list_t* l, intrusive_node_t* del){
     
     if(del->next)
         del->next->prev = del->prev;
-        
-    del = NULL;
 }
 
 void remove_all_nodes(intrusive_list_t *l){
@@ -61,7 +56,7 @@ void remove_all_nodes(intrusive_list_t *l){
     
 }
 void free_node(intrusive_node_t* node) {
-    node = NULL;
+    free(node);
 }
 
 int get_length(intrusive_list_t* l){
@@ -73,9 +68,4 @@ int get_length(intrusive_list_t* l){
     }
 
     return length;
-}
-
-void test(intrusive_list_t* l){
-    intrusive_node_t* cur = l->head.next;
-    printf("%d %d\n", get_point(cur)->x, get_point(cur)->y);
 }
