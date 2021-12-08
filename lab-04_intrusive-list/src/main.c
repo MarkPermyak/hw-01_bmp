@@ -80,9 +80,12 @@ int main() {
         }
 
         else{  
-        
-          if(!strcmp(input, "exit")){
-            break;
+          if(!strcmp(input, "len"))
+            printf("%d\n", get_length(my_list));
+          else{
+            if(!strcmp(input, "exit")){
+              break;
+            }
           }
         }  
       }

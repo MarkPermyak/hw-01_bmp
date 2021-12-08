@@ -31,7 +31,7 @@ point_t* get_point(intrusive_node_t* node_ptr);
 void print_point(intrusive_node_t* node);
 point_t* alloc_point(int x, int y);
 // void remove_node(intrusive_list /* ? */, intrusive_node /* ? */);
-
-// int get_length(intrusive_list /* ? */);
+int list_length;
+int get_length(intrusive_list_t);
 
 #endif
