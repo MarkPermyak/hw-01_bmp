@@ -1,21 +1,37 @@
 #ifndef CLIST_H_
 #define CLIST_H_
 
+#include <stddef.h>
+
 #define container_of(ptr, type, member) (type*)((char*)(ptr) - offsetof(type, member))
 
-struct intrusive_node {
-  struct intrusive_node *next;
-  struct intrusive_node *prev;
+struct intrusive_node{
+  struct intrusive_node* next;
+  //struct intrusive_node *prev;
 };
 
-struct intrusive_list {
-  struct intrusive_node /* ? */ head;
-};
+typedef struct intrusive_node intrusive_node_t;
 
-/* ? */ init_list(intrusive_list /* ? */);
-/* ? */ add_node(intrusive_list /* ? */, intrusive_node /* ? */);
-/* ? */ remove_node(intrusive_list /* ? */, intrusive_node /* ? */);
+typedef struct {
+  intrusive_node_t head;
+} intrusive_list_t;
 
-int get_length(intrusive_list /* ? */);
+typedef struct {
+    int x;
+    int y;
+    intrusive_node_t node;
+} point_t;
+
+void init_list(intrusive_list_t*);
+void add_node(intrusive_list_t*, point_t*);
+void apply(intrusive_list_t* l, void (*func)(intrusive_node_t*));
+void free_node(intrusive_node_t* node);
+void destroy(intrusive_list_t *l);
+point_t* get_point(intrusive_node_t* node_ptr);
+void print_point(intrusive_node_t* node);
+point_t* alloc_point(int x, int y);
+// void remove_node(intrusive_list /* ? */, intrusive_node /* ? */);
+
+// int get_length(intrusive_list /* ? */);
 
 #endif
