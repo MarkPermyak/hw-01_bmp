@@ -67,7 +67,7 @@ int main(int argc, char** argv){
             size_t element_size = sizeof(int);
             comp_t comparator = int_gt_comparator;
             
-            int array = malloc(array_size * element_size);
+            int* array = malloc(array_size * element_size);
 
             fill_int_array(array, argv, array_size);
             
@@ -83,7 +83,7 @@ int main(int argc, char** argv){
             size_t element_size = sizeof(char);
             comp_t comparator = char_gt_comparator;
               
-            char array = malloc(array_size * element_size);
+            char* array = malloc(array_size * element_size);
 
             fill_char_array(array, argv, array_size);
 
