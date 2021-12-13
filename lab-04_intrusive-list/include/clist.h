@@ -30,5 +30,4 @@ int get_length(intrusive_list_t*);
 // void show_all_points(intrusive_list_t);
 // point_t* alloc_point(int x, int y);
 
-void test(intrusive_list_t*);
 #endif
