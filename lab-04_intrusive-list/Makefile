@@ -1,3 +1,4 @@
+CXXFLAGS = -Wall -Werror -Wextra
 OBJECTS = obj/main.o obj/clist.o
 INCLUDE = include/clist.h
 lab-04_intrusive-list: obj $(OBJECTS)

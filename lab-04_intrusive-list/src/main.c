@@ -3,7 +3,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <stddef.h>
-
 #include "clist.h"
 
 #define LINESIZE 239
@@ -24,7 +23,6 @@ point_t* get_point(intrusive_node_t* node_ptr) {
 
 void add_point(intrusive_list_t* l, int x, int y){
     point_t* point = malloc(sizeof(point_t));
-    //intrusive_node_t* node;
     
     point->x = x;
     point->y = y;
@@ -33,20 +31,18 @@ void add_point(intrusive_list_t* l, int x, int y){
 }
 
 void remove_point(intrusive_list_t* l, int x, int y){
-
     intrusive_node_t* cur = l->head.next;
 
     while (cur){
       point_t* cur_point = get_point(cur);
       intrusive_node_t* cur_next = cur->next;
+
       if (cur_point->x == x && cur_point->y == y){
         remove_node(l, cur);
-       
         free(cur_point);
-         //printf("rm %d %d\n", x, y);
       }
+
       cur = cur_next;
-      
     }
 }
 
@@ -55,33 +51,25 @@ void remove_all_points(intrusive_list_t* l) {
   
     while (cur->next)
         cur = cur->next;
-    if (get_length(l) != 0)
-    {
+
+    if (get_length(l) != 0){
       while (cur->prev){
           point_t* p = get_point(cur);
           intrusive_node_t* tmp = cur->prev;
           
           remove_node(l, cur);
           cur = tmp;
-          
-
           free(p);
-          //printf("rma\n");
         }
     }
     else
       return;
-    //init_list(l);
-}
-
-void print_point(intrusive_node_t* node) {
-    point_t* point = get_point(node);
-    printf("(%d %d)", point->x, point->y);
 }
 
 void show_all_points(intrusive_list_t* l){
     intrusive_node_t* cur = l->head.next;
     int i = 0;
+    
     while (cur){ 
         point_t* p = get_point(cur);
         if(i)
@@ -91,9 +79,9 @@ void show_all_points(intrusive_list_t* l){
         i = 1;
         cur = cur->next;
     }
+
     printf("\n");
 }
-
 
 
 int main() {
@@ -102,36 +90,39 @@ int main() {
   init_list(&my_list);
   char input[LINESIZE] = "";
 
-  while (1)
-  {
+  while (1){
     scanf("%s", input);
 
     if (!strcmp(input, "exit")){
       remove_all_points(&my_list);
       return 0;
     }
+
     else if (!strcmp(input, "add")){
       int x;
       int y;
       scanf("%d%d", &x,&y);
       add_point(&my_list, x, y); 
     }
+
     else if (!strcmp(input, "rm")){
       int x;
       int y;
       scanf("%d%d", &x,&y);
       remove_point(&my_list, x, y);
     }
+
     else if (!strcmp(input, "len"))
       printf("%d\n", get_length(&my_list));
+    
     else if (!strcmp(input, "print"))
       show_all_points(&my_list);
+    
     else if (!strcmp(input, "rma"))
       remove_all_points(&my_list);
+    
     else
       printf("%s\n", "Unknown command");
-    
   }
   return 0;
-
 }
