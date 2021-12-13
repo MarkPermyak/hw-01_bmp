@@ -22,14 +22,15 @@ void remove_point(intrusive_list_t* l, int x, int y){
 
     while (cur){
       point_t* cur_point = get_point(cur);
-
+      intrusive_node_t* cur_next = cur->next;
       if (cur_point->x == x && cur_point->y == y){
         remove_node(l, cur);
        
         free(cur_point);
          //printf("rm %d %d\n", x, y);
       }
-      cur = cur->next;
+      cur = cur_next;
+      
     }
 }
 
@@ -85,23 +86,27 @@ int main() {
       remove_all_points(&my_list);
       return 0;
     }
+    else if (!strcmp(input, "add")){
+      int x;
+      int y;
+      scanf("%d%d", &x,&y);
+      add_point(&my_list, x, y); 
+    }
+    else if (!strcmp(input, "rm")){
+      int x;
+      int y;
+      scanf("%d%d", &x,&y);
+      remove_point(&my_list, x, y);
+    }
     else if (!strcmp(input, "len"))
       printf("%d\n", get_length(&my_list));
     else if (!strcmp(input, "print"))
       show_all_points(my_list);
     else if (!strcmp(input, "rma"))
       remove_all_points(&my_list);
-    else{
-      int x;
-      int y;
-      scanf("%d%d", &x,&y);
-      if(!strcmp(input, "add"))
-        add_point(&my_list, x, y);  
-      else if(!strcmp(input, "rm"))
-        remove_point(&my_list, x, y);
-      else
-        printf("%s\n", "Unknown command");
-      }
+    else
+      printf("%s\n", "Unknown command");
+    
     
     fflush (stdout);
   }
