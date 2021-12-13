@@ -17,6 +17,29 @@ int str_gt_comparator(const void *s1, const void *s2){
     return strcmp(*(char**)s1, *(char**)s2);
 }
 
+void int_printer(int *array, int array_size){
+    printf("%d", array[array_size - 1]);
+    for (int i =0; i<array_size - 1; ++i)
+        printf(" %d", array[array_size - 2 - i]);
+    
+    printf("\n");
+}
+
+void char_printer(char *array, int array_size){
+    printf("%c", array[array_size - 1]);
+    for (int i =0; i<array_size - 1; ++i)
+        printf(" %c", array[array_size - 2 - i]);
+    
+    printf("\n");
+}
+
+void str_printer(char **array, int array_size){
+    for(int i = 0; i < array_size - 1; i++)
+        printf("%s ", array[i]);
+
+    printf("%s\n", array[array_size - 1]);
+}
+
 int main(int argc, char** argv){
     if (!strcmp(argv[1], "int")){
         
@@ -34,11 +57,7 @@ int main(int argc, char** argv){
             
             mergesort(array, array_size, element_size, comparator);
             
-            printf("%d", array[array_size - 1]);
-            for (int i =0; i<array_size - 1; ++i)
-                printf(" %d", array[array_size - 2 - i]);
-            
-            printf("\n");
+            int_printer(array, array_size);
         }   
     }    
 
@@ -59,11 +78,7 @@ int main(int argc, char** argv){
 
             mergesort(array, array_size, element_size, comparator);
             
-            printf("%c", array[array_size - 1]);
-            for (int i =0; i<array_size - 1; ++i)
-                printf(" %c", array[array_size - 2 - i]);
-            
-            printf("\n");
+            char_printer(array, array_size);
         }
     } 
  
@@ -83,10 +98,7 @@ int main(int argc, char** argv){
             
             mergesort(array, array_size, element_size, comparator);
             
-            for(int i = 0; i < array_size - 1; i++)
-                printf("%s ", array[i]);
-
-            printf("%s\n", array[array_size - 1]);
+            str_printer(array, array_size);
 
             free(array);
         }
