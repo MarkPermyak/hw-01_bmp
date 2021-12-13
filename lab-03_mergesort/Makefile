@@ -1,3 +1,4 @@
+CXXFLAGS = -Wall -Werror -Wextra
 OBJECTS = obj/main.o obj/mergesort.o
 INCLUDE = include/mergesort.h
 lab-03_mergesort: obj $(OBJECTS)

@@ -1,13 +1,9 @@
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 #include "mergesort.h"
 
 typedef int (*comp_t)(const void *, const void *);
-
-void my_memcpy(void* dst, void* src, size_t element_size){
-    for(char* pdst = dst, *psrc = src; psrc - (char*)src < element_size; *pdst++ = *psrc++);
-}
-
 
 void merge(void* array, size_t elements, size_t element_size, comp_t comparator){
     
@@ -22,28 +18,27 @@ void merge(void* array, size_t elements, size_t element_size, comp_t comparator)
     char* res = (char*)tmp_array;
 
     while ((pntr1 - (char*)array < middle * element_size) && 
-    (pntr2 - (char*)array < elements * element_size))
-    {
-        if (comparator(pntr1, pntr2) <= 0)
-        {
-            my_memcpy(res, pntr1, element_size);
+        (pntr2 - (char*)array < elements * element_size)){
+        
+        if (comparator(pntr1, pntr2) <= 0){
+            memcpy(res, pntr1, element_size);
             pntr1 += element_size;
         }
         
         else{
-            my_memcpy(res, pntr2, element_size);
+            memcpy(res, pntr2, element_size);
             pntr2 += element_size;
         }
+        
         res += element_size;
     }
-    
     
     while (pntr1 - (char*)array < middle * element_size)
         *res++ = *pntr1++;
     while (pntr2 - (char*)array < elements * element_size)
         *res++ = *pntr2++;
 
-    my_memcpy(array, tmp_array, elements*element_size);
+    memcpy(array, tmp_array, elements*element_size);
     free(tmp_array);
 }
 
