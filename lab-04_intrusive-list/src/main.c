@@ -2,9 +2,25 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stddef.h>
+
 #include "clist.h"
 
 #define LINESIZE 239
+
+#define container_of(ptr, type, member) (type*)((char*)(ptr) - offsetof(type, member))
+
+struct point {
+    int x;
+    int y;
+    intrusive_node_t node;
+};
+
+typedef struct point point_t;
+
+point_t* get_point(intrusive_node_t* node_ptr) {
+    return container_of(node_ptr, point_t, node);
+}
 
 void add_point(intrusive_list_t* l, int x, int y){
     point_t* point = malloc(sizeof(point_t));
@@ -68,9 +84,7 @@ void show_all_points(intrusive_list_t l){
     printf("\n");
 }
 
-point_t* get_point(intrusive_node_t* node_ptr) {
-    return container_of(node_ptr, point_t, node);
-}
+
 
 int main() {
 
