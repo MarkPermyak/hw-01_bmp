@@ -14,7 +14,6 @@ point_t* get_point(intrusive_node_t* node_ptr) {
 
 void add_point(intrusive_list_t* l, int x, int y){
     point_t* point = malloc(sizeof(point_t));
-    assert(malloc(sizeof(point_t))!= NULL);
     point->x = x;
     point->y = y;
     add_node(l, &point->node);
