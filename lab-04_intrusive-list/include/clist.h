@@ -1,6 +1,16 @@
 #ifndef CLIST_H_
 #define CLIST_H_
 
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <assert.h>
+
+#define LINESIZE 239
+
+#define container_of(ptr, type, member) (type*)((char*)(ptr) - offsetof(type, member))
+
 struct intrusive_node{
   struct intrusive_node* next;
   struct intrusive_node* prev;

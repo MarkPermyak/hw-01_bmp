@@ -1,7 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include "clist.h"
 
 
@@ -30,14 +27,11 @@ void remove_node(intrusive_list_t* l, intrusive_node_t* del){
 }
 
 void remove_all_nodes(intrusive_list_t *l){
-    intrusive_node_t* cur = &l->head;
-
-    while (cur->next)
-        cur = cur->next;
+    intrusive_node_t* cur = l->head.next;
     
     while (cur){
         remove_node(l, cur);
-        cur = cur->prev;
+        cur = cur->next;
     }
         
 }

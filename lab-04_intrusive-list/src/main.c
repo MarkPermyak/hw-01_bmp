@@ -1,13 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <stddef.h>
 #include "clist.h"
-
-#define LINESIZE 239
-
-#define container_of(ptr, type, member) (type*)((char*)(ptr) - offsetof(type, member))
 
 struct point {
     int x;
@@ -23,7 +14,7 @@ point_t* get_point(intrusive_node_t* node_ptr) {
 
 void add_point(intrusive_list_t* l, int x, int y){
     point_t* point = malloc(sizeof(point_t));
-    
+    assert(malloc(sizeof(point_t))!= NULL);
     point->x = x;
     point->y = y;
     add_node(l, &point->node);
@@ -34,12 +25,12 @@ void remove_point(intrusive_list_t* l, int x, int y){
     intrusive_node_t* cur = l->head.next;
 
     while (cur){
-      point_t* cur_point = get_point(cur);
+      point_t* cur_p = get_point(cur);
       intrusive_node_t* cur_next = cur->next;
 
-      if (cur_point->x == x && cur_point->y == y){
+      if (cur_p->x == x && cur_p->y == y){
         remove_node(l, cur);
-        free(cur_point);
+        free(cur_p);
       }
 
       cur = cur_next;
@@ -47,23 +38,16 @@ void remove_point(intrusive_list_t* l, int x, int y){
 }
 
 void remove_all_points(intrusive_list_t* l) {
-    intrusive_node_t* cur = &l->head;
+    intrusive_node_t* cur = l->head.next;
   
-    while (cur->next)
-        cur = cur->next;
-
-    if (get_length(l) != 0){
-      while (cur->prev){
-          point_t* p = get_point(cur);
-          intrusive_node_t* tmp = cur->prev;
-          
-          remove_node(l, cur);
-          cur = tmp;
-          free(p);
-        }
-    }
-    else
-      return;
+    while (cur){
+      point_t* cur_p = get_point(cur);
+      intrusive_node_t* cur_next = cur->next;
+      
+      remove_node(l, cur);
+      cur = cur_next;
+      free(cur_p);
+    }  
 }
 
 void show_all_points(intrusive_list_t* l){
@@ -71,11 +55,12 @@ void show_all_points(intrusive_list_t* l){
     int i = 0;
     
     while (cur){ 
-        point_t* p = get_point(cur);
+        point_t* cur_p = get_point(cur);
+        
         if(i)
-          printf(" (%d %d)", p->x, p->y);
-        else
-          printf("(%d %d)", p->x, p->y);
+          printf(" ");
+        
+        printf("(%d %d)", cur_p->x, cur_p->y);
         i = 1;
         cur = cur->next;
     }
@@ -91,7 +76,7 @@ int main() {
   char input[LINESIZE] = "";
 
   while (1){
-    scanf("%s", input);
+    scanf("%239s", input);
 
     if (!strcmp(input, "exit")){
       remove_all_points(&my_list);
@@ -101,7 +86,7 @@ int main() {
     else if (!strcmp(input, "add")){
       int x;
       int y;
-      scanf("%d%d", &x,&y);
+      scanf("%239d%239d", &x,&y);
       add_point(&my_list, x, y); 
     }
 
