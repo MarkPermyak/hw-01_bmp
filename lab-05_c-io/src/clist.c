@@ -7,15 +7,36 @@ void init_list(intrusive_list_t *l){
     l->head.next = NULL;
 }
 
+void apply(intrusive_list_t *list, 
+            void (*op)(intrusive_node_t *node, void *data), void *data){
+    intrusive_node_t* cur = list->head.next;
+
+    while (cur) {
+        intrusive_node_t* next = cur->next;
+        op(cur, data);
+        cur = next;
+    }
+
+};
+
 void add_node(intrusive_list_t *l, intrusive_node_t* new) {    
-    intrusive_node_t* first = l->head.next;
+    intrusive_node_t* cur = &l->head;
 
-    l->head.next = new;
+    while (cur->next)
+       cur = cur->next;
+    
+    cur->next = new;
+    new->next = NULL;
+    new->prev = cur;
+    
+    // intrusive_node_t* first = l->head.next;
 
-    new->prev = &l->head;
-    new->next = first;
-    if(first)
-        first->prev = new;
+    // l->head.next = new;
+
+    // new->prev = &l->head;
+    // new->next = first;
+    // if(first)
+    //     first->prev = new;
 }
 
 void remove_node(intrusive_list_t* l, intrusive_node_t* del){

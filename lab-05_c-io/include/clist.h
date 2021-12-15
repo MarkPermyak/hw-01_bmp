@@ -23,6 +23,7 @@ typedef struct {
 } intrusive_list_t;
 
 void init_list(intrusive_list_t*);
+void apply(intrusive_list_t *list, void (*op)(intrusive_node_t *node, void *data), void *data);
 void add_node(intrusive_list_t*, intrusive_node_t*);
 void remove_node(intrusive_list_t*, intrusive_node_t*);
 void remove_all_nodes(intrusive_list_t*);
