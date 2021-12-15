@@ -49,24 +49,26 @@ int main(int argc, char** argv){
         }
 
         else if(!strcmp(argv[3], "savebin")){
-            // fseek(fp, 0, SEEK_SET);
+            fseek(fp, 0, SEEK_SET);
 
-            // char *save_filename = argv[4];
+            char *save_filename = argv[4];
 
-            // FILE *savef = fopen(save_filename, "wb");
+            FILE *savef = fopen(save_filename, "wb");
 
-            // int x, y;
+            int x;
             
-            // while (!feof(fp)){
-            //     fscanf(fp, "%d %d", &x, &y);
-            //     int* pair[2];
-            //     pair[0] = &x;
-            //     pair[1] = &y;
-            //     fwrite(*pair, 4, 2, savef);
-            // }
+            while (!feof(fp)){
+                fscanf(fp, "%d", &x);
+                // int* pair[2];
+                // pair[0] = &x;
+                // pair[1] = &y;
+                x >> 8;
+                x << 8;
+                fwrite(&x, 3, 1, savef);
+            }
             
             
-            // fclose(savef);
+            fclose(savef);
         }
 
         else if (!strcmp(argv[3], "count")){
