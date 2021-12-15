@@ -10,6 +10,10 @@ void print_point(intrusive_node_t *node, void* fmt){
     printf(fmt, point->x, point->y);
 };
 
+void count_point(intrusive_node_t *node, int* p_count){
+    *p_count = *p_count + 1;
+};
+
 int main(int argc, char** argv){
     if (!strcmp(argv[1], "loadtext")){
         
@@ -45,8 +49,8 @@ int main(int argc, char** argv){
 
         else if (!strcmp(argv[3], "count")){
             int count = 0;
-            while (fgets(buffer, MAXSIZE, fp))
-                count++;
+            int* p_count = &count;
+            apply(&my_list, count_point, p_count);
             printf("%d\n", count);    
         }
         

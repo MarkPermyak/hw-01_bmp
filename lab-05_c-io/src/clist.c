@@ -20,6 +20,7 @@ void apply(intrusive_list_t *list,
 };
 
 void add_node(intrusive_list_t *l, intrusive_node_t* new) {    
+    // Add to the end
     intrusive_node_t* cur = &l->head;
 
     while (cur->next)
@@ -28,7 +29,8 @@ void add_node(intrusive_list_t *l, intrusive_node_t* new) {
     cur->next = new;
     new->next = NULL;
     new->prev = cur;
-    
+
+    //Add to the beginning
     // intrusive_node_t* first = l->head.next;
 
     // l->head.next = new;
