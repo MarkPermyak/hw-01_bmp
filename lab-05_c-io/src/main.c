@@ -10,8 +10,8 @@ void print_point(intrusive_node_t *node, void* fmt){
     printf(fmt, point->x, point->y);
 };
 
-void count_point(intrusive_node_t *node, int* p_count){
-    *p_count = *p_count + 1;
+void count_point(intrusive_node_t *node, void* p_count){
+    *(int*)p_count = *(int*)p_count + 1;
 };
 
 int main(int argc, char** argv){
@@ -35,6 +35,7 @@ int main(int argc, char** argv){
             char *save_filename = argv[4];
             FILE *savef = fopen(save_filename, "w");
 
+            fseek(fp, 0, SEEK_SET);
             while (fgets(buffer, MAXSIZE, fp))
                 fprintf(savef, "%s", buffer);
             
@@ -45,6 +46,27 @@ int main(int argc, char** argv){
             // while (fgets(buffer, MAXSIZE, savef))
             //     printf("%s", buffer);
             // fclose(savef); 
+        }
+
+        else if(!strcmp(argv[3], "savebin")){
+            // fseek(fp, 0, SEEK_SET);
+
+            // char *save_filename = argv[4];
+
+            // FILE *savef = fopen(save_filename, "wb");
+
+            // int x, y;
+            
+            // while (!feof(fp)){
+            //     fscanf(fp, "%d %d", &x, &y);
+            //     int* pair[2];
+            //     pair[0] = &x;
+            //     pair[1] = &y;
+            //     fwrite(*pair, 4, 2, savef);
+            // }
+            
+            
+            // fclose(savef);
         }
 
         else if (!strcmp(argv[3], "count")){
@@ -62,8 +84,30 @@ int main(int argc, char** argv){
 
 
     fclose(fp);    
-
+    remove_all_points(&my_list);
+    return 0;
     }
 
-    return 0;
+    // if (!strcmp(argv[1], "loadbin")){
+    //     char *filename = argv[2];
+        
+    //     FILE *fp = fopen(filename, "rb");
+    //     fseek(fp , 0 , SEEK_END);                          
+    //     long lSize = ftell(fp);                           
+    //     rewind (fp);     
+    //     char * buffer = (char*) malloc(sizeof(char) * lSize);
+    //     size_t result = fread(buffer, 1, lSize, fp);
+    //     puts(buffer);
+
+
+        
+    //     fclose(fp);
+    //     free(buffer);
+
+
+
+
+    //     return 0;
+    // }
+    
 }
