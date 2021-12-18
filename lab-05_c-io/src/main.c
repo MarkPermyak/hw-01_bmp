@@ -39,6 +39,20 @@ void save_point_text(intrusive_node_t *node, void* savef){
     fprintf(savef, "%d %d\n", point->x, point->y);
 };
 
+void save_point_bin(intrusive_node_t* node, void* savef){
+    point_t* point = get_point(node);
+
+    unsigned char bin_point[2*BYTES_IN_NUMBER];
+    int x = point->x;
+    int y = point->y;
+    for (int i = 0; i < BYTES_IN_NUMBER; i++)
+        bin_point[i] = (x >> (BITS_IN_BYTE * i)) & ((1 << BITS_IN_BYTE) - 1);
+    
+    for (int i = 3; i < 2*BYTES_IN_NUMBER; i++)
+        bin_point[i] = (y >> (BITS_IN_BYTE * (i-3))) & ((1 << BITS_IN_BYTE) - 1);
+    
+    fwrite(bin_point, sizeof(bin_point), 1, savef);    
+};
 int main(int argc, char** argv){
    
     intrusive_list_t my_list;
@@ -79,15 +93,7 @@ int main(int argc, char** argv){
 
             int x;
             
-            while (!feof(fp)){
-                fscanf(fp, "%d", &x);
-                // int* pair[2];
-                // pair[0] = &x;
-                // pair[1] = &y;
-                x >> 8;
-                x << 8;
-                fwrite(&x, 3, 1, savef);
-            }
+            apply(&my_list, save_point_bin, savef);
             
             
             fclose(savef);
