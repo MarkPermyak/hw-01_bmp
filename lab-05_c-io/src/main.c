@@ -7,7 +7,48 @@
 #define BYTES_IN_NUMBER 3
 #define BITS_IN_BYTE 8
 
+int get_size(FILE* fp){
+    long Size;
+    fseek (fp, 0 , SEEK_END);
+    Size = ftell(fp) ;
+    rewind(fp);
+    return Size;
+};
 
+void add_points_text(intrusive_list_t* l, FILE* fp){
+    int x = 0, y = 0;
+
+    while(fscanf(fp, "%d %d", &x, &y) != EOF)
+        add_point(l, x, y);
+};
+
+void add_points_bin(intrusive_list_t* l, FILE* fp){
+    
+    int Size = get_size(fp);
+    int read_Size = 0;
+
+    while (read_Size != Size){
+        unsigned char point[2 * BYTES_IN_NUMBER];
+
+        read_Size += fread(point, sizeof(unsigned char), 2 * BYTES_IN_NUMBER, fp);
+        
+        int x = 0, y = 0;
+
+        for (int i = 0; i < BYTES_IN_NUMBER; i++){
+            int shift = point[i] << i*BITS_IN_BYTE;
+            x |= shift;    
+        }
+        
+        for (int i = 3; i < 2 * BYTES_IN_NUMBER; i++){
+            int shift = point[i] << (i-3)*BITS_IN_BYTE;
+            y |= shift;    
+        }
+        
+
+        add_point(l, x, y);
+        
+    }
+};
 void print_point(intrusive_node_t *node, void* fmt){
     point_t* point = get_point(node);
     printf(fmt, point->x, point->y);
@@ -36,48 +77,35 @@ void save_point_bin(intrusive_node_t* node, void* savef){
     
     fwrite(bin_point, sizeof(bin_point), 1, savef);    
 };
+
 int main(int argc, char** argv){
    
     intrusive_list_t my_list;
     init_list(&my_list);    
-    char *filename = argv[2];
     
+    char* filename = argv[2];
+    FILE* fp = fopen(filename, "r");
+
     if (!strcmp(argv[1], "loadtext")){
         
-
-        FILE *fp = fopen(filename, "r");
-        
-
-       
-
-        int x, y;
-
-        while(fscanf(fp, "%d %d", &x, &y) != EOF)
-            add_point(&my_list, x, y);
-
+        add_points_text(&my_list, fp);
 
         if (!strcmp(argv[3], "savetext")){
             char *save_filename = argv[4];
             FILE *savef = fopen(save_filename, "w");
-            char buffer[MAXSIZE];
-            fseek(fp, 0, SEEK_SET);
-            while (fgets(buffer, MAXSIZE, fp))
-                fprintf(savef, "%s", buffer);
-            
+            apply(&my_list, save_point_text, savef);
             fclose(savef);
         }
 
         else if(!strcmp(argv[3], "savebin")){
             fseek(fp, 0, SEEK_SET);
 
-            char *save_filename = argv[4];
-
-            FILE *savef = fopen(save_filename, "wb");
+            char* save_filename = argv[4];
+            FILE* savef = fopen(save_filename, "w");
 
             int x;
             
             apply(&my_list, save_point_bin, savef);
-            
             
             fclose(savef);
         }
@@ -96,60 +124,35 @@ int main(int argc, char** argv){
         }
 
 
-    fclose(fp);    
-    remove_all_points(&my_list);
-    return 0;
+        fclose(fp);    
+        remove_all_points(&my_list);
+        return 0;
     }
 
     if (!strcmp(argv[1], "loadbin")){
         
-        FILE *fp = fopen(filename, "rb");
-        long Size;
-        fseek (fp, 0 , SEEK_END);
-        Size = ftell(fp) ;
-        rewind(fp);
-
-        int read_Size = 0;
-        while (read_Size != Size){
-            unsigned char point[2 * BYTES_IN_NUMBER];
-
-            read_Size += fread(point, sizeof(unsigned char), 2 * BYTES_IN_NUMBER, fp);
-            
-            int x = 0, y = 0;
-
-            for (int i = 0; i < BYTES_IN_NUMBER; i++){
-                int shift = point[i] << i*BITS_IN_BYTE;
-                x |= shift;    
-            }
-            
-            for (int i = 3; i < 2 * BYTES_IN_NUMBER; i++){
-                int shift = point[i] << (i-3)*BITS_IN_BYTE;
-                y |= shift;    
-            }
-            
-
-            add_point(&my_list, x, y);
-            
-        }
+        add_points_bin(&my_list, fp);
      
         if (!strcmp(argv[3], "savetext")){
             char *save_filename = argv[4];
             FILE *savef = fopen(save_filename, "w");
+
             apply(&my_list, save_point_text, savef);
+
             fclose(savef);
         }
 
-        else if(!strcmp(argv[3], "savebin")){
-            char *save_filename = argv[4];
-            FILE *savef = fopen(save_filename, "wb");
-            char buffer[Size];
+       else if(!strcmp(argv[3], "savebin")){
             fseek(fp, 0, SEEK_SET);
+
+            char* save_filename = argv[4];
+            FILE* savef = fopen(save_filename, "w");
+
+            int x;
             
-            fread(buffer, sizeof(unsigned char), Size, fp);
-            fwrite(buffer, sizeof(buffer), 1, savef);
-
+            apply(&my_list, save_point_bin, savef);
+            
             fclose(savef);
-
         }
 
         else if (!strcmp(argv[3], "count")){
