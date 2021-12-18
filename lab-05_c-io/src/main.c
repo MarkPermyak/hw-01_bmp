@@ -49,6 +49,15 @@ void add_points_bin(intrusive_list_t* l, FILE* fp){
         
     }
 };
+
+void add_points_from_file(intrusive_list_t* l, FILE* fp, char* file_type){
+    if (!strcmp(file_type, "loadtext"))
+        add_points_text(l, fp);
+    
+    else if (!strcmp(file_type, "loadbin"))
+        add_points_bin(l, fp);
+};
+
 void print_point(intrusive_node_t *node, void* fmt){
     point_t* point = get_point(node);
     printf(fmt, point->x, point->y);
@@ -86,91 +95,48 @@ int main(int argc, char** argv){
     char* filename = argv[2];
     FILE* fp = fopen(filename, "r");
 
-    if (!strcmp(argv[1], "loadtext")){
+    char* file_type = argv[1];
+    add_points_from_file(&my_list, fp, file_type);
+    
+    if (!strcmp(argv[3], "savetext")){
+        char *save_filename = argv[4];
+        FILE *savef = fopen(save_filename, "w");
         
-        add_points_text(&my_list, fp);
-
-        if (!strcmp(argv[3], "savetext")){
-            char *save_filename = argv[4];
-            FILE *savef = fopen(save_filename, "w");
-            apply(&my_list, save_point_text, savef);
-            fclose(savef);
-        }
-
-        else if(!strcmp(argv[3], "savebin")){
-            fseek(fp, 0, SEEK_SET);
-
-            char* save_filename = argv[4];
-            FILE* savef = fopen(save_filename, "w");
-
-            int x;
-            
-            apply(&my_list, save_point_bin, savef);
-            
-            fclose(savef);
-        }
-
-        else if (!strcmp(argv[3], "count")){
-            int count = 0;
-            int* p_count = &count;
-            apply(&my_list, count_point, p_count);
-            printf("%d\n", count);    
-        }
+        apply(&my_list, save_point_text, savef);
         
-        else if (!strcmp(argv[3], "print")){
-            char* fmt = argv[4];
-            apply(&my_list, print_point, fmt);
-            printf("\n");
-        }
-
-
-        fclose(fp);    
-        remove_all_points(&my_list);
-        return 0;
+        fclose(savef);
     }
 
-    if (!strcmp(argv[1], "loadbin")){
+    else if(!strcmp(argv[3], "savebin")){
+        fseek(fp, 0, SEEK_SET);
+
+        char* save_filename = argv[4];
+        FILE* savef = fopen(save_filename, "w");
         
-        add_points_bin(&my_list, fp);
-     
-        if (!strcmp(argv[3], "savetext")){
-            char *save_filename = argv[4];
-            FILE *savef = fopen(save_filename, "w");
-
-            apply(&my_list, save_point_text, savef);
-
-            fclose(savef);
-        }
-
-       else if(!strcmp(argv[3], "savebin")){
-            fseek(fp, 0, SEEK_SET);
-
-            char* save_filename = argv[4];
-            FILE* savef = fopen(save_filename, "w");
-
-            int x;
-            
-            apply(&my_list, save_point_bin, savef);
-            
-            fclose(savef);
-        }
-
-        else if (!strcmp(argv[3], "count")){
-            int count = 0;
-            int* p_count = &count;
-            apply(&my_list, count_point, p_count);
-            printf("%d\n", count);    
-        }
+        apply(&my_list, save_point_bin, savef);
         
-        else if (!strcmp(argv[3], "print")){
-            char* fmt = argv[4];
-            apply(&my_list, print_point, fmt);
-            printf("\n");
-        }
+        fclose(savef);
+    }
 
-        fclose(fp);   
-        remove_all_points(&my_list);
-        return 0;
+    else if (!strcmp(argv[3], "count")){
+        int count = 0;
+        int* p_count = &count;
+
+        apply(&my_list, count_point, p_count);
+        
+        printf("%d\n", count);    
     }
     
+    else if (!strcmp(argv[3], "print")){
+        char* fmt = argv[4];
+        
+        apply(&my_list, print_point, fmt);
+        
+        printf("\n");
+    }
+
+
+    fclose(fp);    
+    remove_all_points(&my_list);
+    return 0;
 }
