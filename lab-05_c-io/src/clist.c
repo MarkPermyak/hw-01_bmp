@@ -1,6 +1,4 @@
-#include <stdio.h>
 #include "clist.h"
-
 
 void init_list(intrusive_list_t *l){
     l->head.prev = NULL;

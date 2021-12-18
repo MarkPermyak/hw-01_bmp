@@ -1,9 +1,6 @@
-#include <stdio.h>
-#include <string.h>
 #include "clist.h"
 #include "point_list.h"
 
-#define MAXSIZE 20
 #define BYTES_IN_NUMBER 3
 #define BITS_IN_BYTE 8
 
