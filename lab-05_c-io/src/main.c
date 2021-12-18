@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 #include "clist.h"
 #include "point_list.h"
 
@@ -8,22 +7,6 @@
 #define BYTES_IN_NUMBER 3
 #define BITS_IN_BYTE 8
 
-static void bin_to_int(unsigned char * data, int * result) {
-	*result = 0;
-	for (size_t position = 0; position < BYTES_IN_NUMBER; position++) {
-		*result |= data[position] << (position * BITS_IN_BYTE);
-	}
-}
-
-bool read_point_bin(FILE * infile, int * x, int * y) {
-	unsigned char input[2 * BYTES_IN_NUMBER];
-	if (fread(input, sizeof(unsigned char), 2 * BYTES_IN_NUMBER, infile) != 2 * BYTES_IN_NUMBER) {
-		return false;
-	}
-	bin_to_int(input, x);
-	bin_to_int(&input[BYTES_IN_NUMBER], y);
-	return true;
-}
 
 void print_point(intrusive_node_t *node, void* fmt){
     point_t* point = get_point(node);
@@ -183,7 +166,6 @@ int main(int argc, char** argv){
         }
 
         fclose(fp);   
-        //show_all_points(&my_list);
         remove_all_points(&my_list);
         return 0;
     }
