@@ -184,7 +184,7 @@ int main(int argc, char** argv){
 
         fclose(fp);   
         //show_all_points(&my_list);
-
+        remove_all_points(&my_list);
         return 0;
     }
     
