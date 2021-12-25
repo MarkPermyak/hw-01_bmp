@@ -96,6 +96,45 @@ void free_bmp(bmpFILE* bmp){
     // free(bmp);
 };
 
+bmpFILE* crop(bmpFILE* bmp, int x, int y, int w_cr, int h_cr){
+    
+    BITMAPFILEHEADER* bfh = &bmp->bfh;
+    BITMAPINFOHEADER* bih = &bmp->bih;
+    pixel** data = bmp->data;
+
+    int h = bih->biHeight;
+
+    if(x == bih->biWidth || y == bih->biHeight)
+        return bmp;
+
+    int byte1pxl = sizeof(pixel);
+    int padding = (4 - ((w_cr * byte1pxl) % 4)) % 4;
+    
+    bih->biSizeImage = (w_cr + padding) * h_cr * sizeof(pixel);
+    bfh->bfSize = bih->biSizeImage + bfh->bfOffBits;
+
+    bih->biHeight = h_cr;
+    bih->biWidth = w_cr;
+
+    pixel** data_cr = malloc(sizeof(pixel) * h_cr * w_cr);
+
+    for(int i = 0; i < h_cr; i++)
+        data_cr[i] = malloc(sizeof(pixel) * w_cr);
+
+    // int starty = h - y - h_cr;
+    // int finishx = x + w_cr + 1;
+
+    for(int i = 0; i < h_cr; i++){
+        for (int j = 0; j < w_cr; j++){
+            data_cr[i][j].blue = data[h - y - h_cr + i][x + j].blue;
+            data_cr[i][j].green = data[h - y - h_cr + i][x + j].green;
+            data_cr[i][j].red = data[h - y - h_cr + i][x + j].red;
+        }
+    }
+    
+    bmp->data = data_cr;
+};
+
 void rotate(bmpFILE* bmp){
     BITMAPFILEHEADER* bfh = &bmp->bfh;
     BITMAPINFOHEADER* bih = &bmp->bih;

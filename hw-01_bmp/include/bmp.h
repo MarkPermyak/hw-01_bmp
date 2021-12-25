@@ -56,6 +56,7 @@ typedef struct bmp_file_t{
 
 bmpFILE* load_bmp(char*);
 void free_bmp(bmpFILE*);
+bmpFILE* crop(bmpFILE*, int, int, int, int);
 void rotate(bmpFILE*);
 void save_bmp(char*, bmpFILE*);
 #endif

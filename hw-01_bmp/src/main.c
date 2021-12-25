@@ -1,8 +1,14 @@
 #include "bmp.h"
 
 int main(){
-    bmpFILE* test = load_bmp("tests/lena_512.bmp");
-    
+
+    bmpFILE* test1 = load_bmp("tests/lena_512.bmp");
+    // rotate(test1);
+    // save_bmp("tests/copy.bmp", test1);
+    bmpFILE* test = crop(test1, 256, 0, 256, 512);
+    save_bmp("tests/kek2.bmp", test);
+    // bmpFILE* test = load_bmp("tests/copy.bmp");
+
     // BITMAPINFOHEADER bih = test->bih;
     // BITMAPFILEHEADER bfh = test->bfh;
     // pixel** data = test->data;
@@ -11,7 +17,7 @@ int main(){
     // int w = bih.biWidth;
     
     
-    //  printf("Type: %d\n", bfh.bfType);
+    // printf("Type: %d\n", bfh.bfType);
     // printf("Size: %d\n", bfh.bfSize);
     // printf("Reserved1: %d\n", bfh.bfReserved1);
     // printf("Reserved2: %d\n", bfh.bfReserved2);
@@ -35,6 +41,6 @@ int main(){
     //     printf("\n");
     // }
     //free_bmp(test);
-    rotate(test);
-    save_bmp("tests/copy.bmp", test);
+    
+    
 };
