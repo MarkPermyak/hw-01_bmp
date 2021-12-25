@@ -17,13 +17,15 @@ typedef uint32_t DWORD;
 typedef uint16_t WORD;    
 typedef uint8_t BYTE;
 
+#pragma pack(push,1)
  typedef struct tagBITMAPFILEHEADER{
     WORD    bfType;
     DWORD   bfSize;
     WORD    bfReserved1;
     WORD    bfReserved2;
     DWORD   bfOffBits;
- } BITMAPFILEHEADER, *PBITMAPFILEHEADER;
+ } BITMAPFILEHEADER;
+#pragma pack(pop)
 
  typedef struct tagBITMAPINFOHEADER{
     DWORD  biSize;
@@ -37,14 +39,23 @@ typedef uint8_t BYTE;
     DWORD   biYPelsPerMeter;
     DWORD  biClrUsed;
     DWORD  biClrImportant;
- } BITMAPINFOHEADER, *PBITMAPINFOHEADER;
+ } BITMAPINFOHEADER;
+
+
+typedef struct pixel_t{
+   BYTE blue;
+   BYTE green;
+   BYTE red;
+} pixel;
 
 typedef struct bmp_file_t{
    BITMAPFILEHEADER bfh;
    BITMAPINFOHEADER bih;
-   int** data;
+   pixel** data;
 } bmpFILE;
 
-bmpFILE load_bmp(char*);
-
+bmpFILE* load_bmp(char*);
+void free_bmp(bmpFILE*);
+void rotate(bmpFILE*);
+void save_bmp(char*, bmpFILE*);
 #endif
