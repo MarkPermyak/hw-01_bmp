@@ -51,6 +51,7 @@ int main(int argc, char** argv){
     rotate(bmp);
    
     save_bmp(out_bmp, bmp);
-    
+    free(bmp);
+    //free_bmp(bmp);
     return 0;
 };
