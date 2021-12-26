@@ -4,17 +4,17 @@
 
 int main(int argc, char** argv){
 
-    if(argc != 7){
+    if(argc != 8){
         printf("Wrong number of arguments\n");
         return 1;
     }
 
-    char* in_bmp = argv[1];
-    char* out_bmp = argv[2];
-    int x = atoi(argv[3]);
-    int y = atoi(argv[4]);
-    int w = atoi(argv[5]);
-    int h = atoi(argv[6]);
+    char* in_bmp = argv[2];
+    char* out_bmp = argv[3];
+    int x = atoi(argv[4]);
+    int y = atoi(argv[5]);
+    int w = atoi(argv[6]);
+    int h = atoi(argv[7]);
 
     if(w <= 0 || h <= 0){
         printf("Invalid size of rectangle\n");
