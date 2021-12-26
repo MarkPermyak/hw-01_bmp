@@ -4,7 +4,7 @@ INCLUDE = include/bmp.h
 hw-01_bmp: obj $(OBJECTS)
 	gcc -o $@ $(OBJECTS)
 $(OBJECTS): obj/%.o: src/%.c $(INCLUDE)
-	gcc -I include -c $< -o $@
+	gcc -I include -c $(CXXFLAGS) $< -o $@
 obj:
 	mkdir -p obj
 clean:

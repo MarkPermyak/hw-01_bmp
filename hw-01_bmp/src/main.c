@@ -33,7 +33,7 @@ int main(int argc, char** argv){
         printf("Input image doesn't exists\n");
         return 1;
     }
-    //printf("%d\n", bmp->bih.biSizeImage);
+
     int width = bmp->bih.biWidth;
     int height = bmp->bih.biHeight;
 
@@ -49,9 +49,7 @@ int main(int argc, char** argv){
 
     crop(bmp, x, y, w, h);
     rotate(bmp);
-    // printf("%d\n%d", bmp_cropped->bih.biSizeImage, bmp_croppedrotated->bih.biSizeImage);
-    //printf("%d\n", bmp->bih.biSizeImage);
-
+   
     save_bmp(out_bmp, bmp);
     
     return 0;
