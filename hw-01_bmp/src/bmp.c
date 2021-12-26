@@ -66,7 +66,7 @@ bmpFILE* crop(bmpFILE* bmp, int x, int y, int w_cr, int h_cr){
     if(x == bih->biWidth || y == bih->biHeight)
         return bmp;
 
-    //printf("OK1\n");
+    printf("OK1\n");
    
 
    
@@ -76,19 +76,19 @@ bmpFILE* crop(bmpFILE* bmp, int x, int y, int w_cr, int h_cr){
     for(int i = 0; i < h_cr; i++)
         data_cr[i] = malloc(sizeof(pixel) * w_cr);
 
-    // printf("OK2\n");
+    printf("OK2\n");
 
-    // printf("%d %d %d %d %d\n", h_cr, w_cr, h, x, y);
+    printf("%d %d %d %d %d\n", h_cr, w_cr, h, x, y);
     
     //printf("%ld\n", sizeof(data_cr[0]));
 
     for(int i = 0; i < h_cr; i++){
         
-            data_cr[i] = data[h - y - h_cr + i];
+            data_cr[i] = (pixel*)data[h - y - h_cr + i] + x;
             //printf("OK\n");
         
     }
-    //printf("OK\n");
+    printf("OK\n");
     bih->biHeight = h_cr;
     bih->biWidth = w_cr;
     bmp->data = data_cr;
@@ -120,7 +120,7 @@ bmpFILE* rotate(bmpFILE* bmp){
             data_r[i][j] = data[j][w - 1 - i];
         }
     }
-    //printf("OK3\n");
+    printf("OK3\n");
     bmp->data = data_r;
     
     return bmp;
@@ -155,7 +155,7 @@ void save_bmp(char* filename, bmpFILE* bmp){
         fwrite(data[i], sizeof(pixel), w, fp);
         fwrite(padding_str, 1, padding, fp);
     }
-    //printf("OK4\n");
+    printf("OK4\n");
     fclose(fp);
 };
 //printf("%ld", sizeof(data));
