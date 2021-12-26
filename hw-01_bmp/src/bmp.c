@@ -5,14 +5,8 @@
 void load_bmp(char* filename, bmpFILE* work_bmp){
     FILE* bmp = fopen(filename, "rb");
     
-    // if(!bmp)
-    //     return NULL;   
-    
     BITMAPFILEHEADER* bfh = &work_bmp->bfh;
     BITMAPINFOHEADER* bih = &work_bmp->bih;
-
-    // if (!bfh || !bih)
-    //     return NULL;
 
     fread(bfh, sizeof(BITMAPFILEHEADER), 1, bmp);
     fread(bih, sizeof(BITMAPINFOHEADER), 1, bmp);
@@ -23,9 +17,10 @@ void load_bmp(char* filename, bmpFILE* work_bmp){
     int padding = (4 - ((w * sizeof(pixel)) % 4)) % 4;
 
     work_bmp->data = malloc(sizeof(pixel*) * h);
-    pixel* pixels_massive = malloc(sizeof(pixel) * w * h);
+    pixel* pixels_row = malloc(sizeof(pixel) * w * h);
+
     for (int i = 0; i < h; i++) {
-        work_bmp->data[i] = pixels_massive + i * w;
+        work_bmp->data[i] = pixels_row + i * w;
     }
 
     // pixel** data = malloc(sizeof(pixel*) * h);
@@ -69,25 +64,27 @@ void crop(bmpFILE* bmp, int x, int y, int w_cr, int h_cr){
     pixel** data = bmp->data;
 
     int h = bih->biHeight;
-   
+
     pixel** data_cr = malloc(sizeof(pixel*) * h_cr);
-    pixel* pixels_massive = malloc(sizeof(pixel) * w_cr * h_cr);
+    pixel* pixels_row = malloc(sizeof(pixel) * w_cr * h_cr);
     for (int i = 0; i < h_cr; i++) {
-        data_cr[i] = pixels_massive + i * w_cr;
+        data_cr[i] = pixels_row + i * w_cr;
     }
 
 
     for(int i = 0; i < h_cr; i++){        
-        data_cr[i] = (pixel*)data[h - y - h_cr + i] + x;
+        for(int j=0; j < w_cr; j++)
+            data_cr[i][j] = data[h - y - h_cr + i][x + j];
     }    
 
     // for(int i=0; i < h; i++)
-    //     free(data[i]);
-    //free(data);
+    // free(bmp->data[0]);
 
     bih->biHeight = h_cr;
     bih->biWidth = w_cr;
-    
+
+    free(data[0]);
+    free(data);    
     bmp->data = data_cr;
     //free_data(bmp);
 };
@@ -106,9 +103,9 @@ void rotate(bmpFILE* bmp){
     int w_r = bih->biWidth;
     
     pixel** data_r = malloc(sizeof(pixel*) * h_r);
-    pixel* pixels_massive = malloc(sizeof(pixel) * w_r * h_r);
+    pixel* pixels_row = malloc(sizeof(pixel) * w_r * h_r);
     for (int i = 0; i < h_r; i++) {
-        data_r[i] = pixels_massive + i * w_r;
+        data_r[i] = pixels_row + i * w_r;
     }
     // for(int i = 0; i < h_r; i++)
     //     data_r[i] = malloc(sizeof(pixel) * w_r);
@@ -120,8 +117,8 @@ void rotate(bmpFILE* bmp){
     }
 
     // for(int i=0; i < h; i++)
-    //     free(data[i]);
-    // free(data);
+    free(data[0]);
+    free(data);
 
     bmp->data = data_r;
     //free_data(bmp);
@@ -157,7 +154,8 @@ void save_bmp(char* filename, bmpFILE* bmp){
 
     // for(int i=0; i < h; i++)
     //     free(data[i]);
-    // free(data);
+    free(data[0]);
+    free(data);
 
     fclose(fp);
 };
