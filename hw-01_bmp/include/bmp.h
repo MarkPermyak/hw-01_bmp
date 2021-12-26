@@ -50,8 +50,8 @@ typedef struct bmp_file_t{
 void load_bmp(char*, bmpFILE*);
 void free_data(bmpFILE*);
 // void free_bmp(bmpFILE*);
-void crop(bmpFILE*, bmpFILE*, int, int, int, int);
-void rotate(bmpFILE*, bmpFILE*);
+void crop(bmpFILE*, int, int, int, int);
+void rotate(bmpFILE*);
 void save_bmp(char*, bmpFILE*);
 
 #endif

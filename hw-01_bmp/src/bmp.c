@@ -53,8 +53,7 @@ void load_bmp(char* filename, bmpFILE* work_bmp){
 void free_data(bmpFILE* bmp){
     // for(int i=0; i < rows; i++)
     //     free(data[i]);
-    for(DWORD i =0; i<bmp->bih.biHeight; i++)
-        free(bmp->data[i]);
+    free(bmp->data[0]);
     free(bmp->data);
 };
 
@@ -65,11 +64,11 @@ void free_data(bmpFILE* bmp){
 //     free(bmp);
 // };
 
-void crop(bmpFILE* bmp, bmpFILE* bmp_cr, int x, int y, int w_cr, int h_cr){
-    BITMAPINFOHEADER* bmp_bih = &bmp->bih;
+void crop(bmpFILE* bmp, int x, int y, int w_cr, int h_cr){
+    BITMAPINFOHEADER* bih = &bmp->bih;
     pixel** data = bmp->data;
 
-    int h = bmp_bih->biHeight;
+    int h = bih->biHeight;
    
     pixel** data_cr = malloc(sizeof(pixel*) * h_cr);
     pixel* pixels_massive = malloc(sizeof(pixel) * w_cr * h_cr);
@@ -86,33 +85,25 @@ void crop(bmpFILE* bmp, bmpFILE* bmp_cr, int x, int y, int w_cr, int h_cr){
     //     free(data[i]);
     //free(data);
 
-    // bih->biHeight = h_cr;
-    // bih->biWidth = w_cr;
+    bih->biHeight = h_cr;
+    bih->biWidth = w_cr;
     
-    //bmp->data = data_cr;
-
-    bmp_cr->bfh = bmp->bfh;
-    bmp_cr->bih = bmp->bih;
-    bmp_cr->bih.biHeight = h_cr;
-    bmp_cr->bih.biWidth = w_cr;
-    bmp_cr->data = data_cr;
+    bmp->data = data_cr;
     //free_data(bmp);
 };
 
-void rotate(bmpFILE* bmp, bmpFILE* bmp_r){
-    BITMAPINFOHEADER* bmp_bih = &bmp->bih;
+void rotate(bmpFILE* bmp){
+    BITMAPINFOHEADER* bih = &bmp->bih;
     pixel** data = bmp->data;
 
-    int h = bmp_bih->biHeight;
-    int w = bmp_bih->biWidth;
+    int h = bih->biHeight;
+    int w = bih->biWidth;
 
-    bmp_r->bfh = bmp->bfh;
-    bmp_r->bih = bmp->bih;
-    bmp_r->bih.biHeight = w;
-    bmp_r->bih.biWidth = h;
+    bih->biHeight = w;
+    bih->biWidth = h;
 
-    int h_r = bmp_bih->biHeight;
-    int w_r = bmp_bih->biWidth;
+    int h_r = bih->biHeight;
+    int w_r = bih->biWidth;
     
     pixel** data_r = malloc(sizeof(pixel*) * h_r);
     pixel* pixels_massive = malloc(sizeof(pixel) * w_r * h_r);
@@ -132,7 +123,7 @@ void rotate(bmpFILE* bmp, bmpFILE* bmp_r){
     //     free(data[i]);
     // free(data);
 
-    bmp_r->data = data_r;
+    bmp->data = data_r;
     //free_data(bmp);
 };
 

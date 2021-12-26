@@ -49,19 +49,12 @@ int main(int argc, char** argv){
         return 1;
     }
 
-    bmpFILE bmp_cropped;
-
-    crop(&bmp, &bmp_cropped, x, y, w, h);
     
-    bmpFILE bmp_cropped_rotated;
-    rotate(&bmp_cropped, &bmp_cropped_rotated);
+    crop(&bmp, x, y, w, h);
+    rotate(&bmp);
    
-    save_bmp(out_bmp, &bmp_cropped_rotated);
-    
-    // free_data(&bmp_cropped_rotated);
-    // free_data(&bmp_cropped);
-    // free_data(&bmp);
-
+    save_bmp(out_bmp, &bmp);
+  
     // free_bmp(bmp);
     return 0;
 };
