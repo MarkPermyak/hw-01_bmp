@@ -108,10 +108,10 @@ bmpFILE* crop(bmpFILE* bmp, int x, int y, int w_cr, int h_cr){
         return bmp;
 
     
-    //int padding = (4 - ((w_cr * sizeof(pixel)) % 4)) % 4;
-    int padding = 0;
+    int padding = (4 - ((w_cr * sizeof(pixel)) % 4)) % 4;
+   
 
-    bih->biSizeImage = (w_cr + padding) * h_cr * sizeof(pixel);
+    bih->biSizeImage = w_cr * h_cr * sizeof(pixel) + padding * h_cr;
     bfh->bfSize = bih->biSizeImage + bfh->bfOffBits;
 
     bih->biHeight = h_cr;
@@ -173,10 +173,9 @@ void save_bmp(char* filename, bmpFILE* bmp){
     fwrite(bih, 40, 1, fp);
     int w = bih->biWidth;
     int h = bih->biHeight;
-    int byte1pxl = bih->biBitCount / 8;
-    int padding = (4 - ((byte1pxl * w) % 4)) % 4;
     
-   
+    int padding = (4 - ((sizeof(pixel) * w) % 4)) % 4;
+    
     pixel** data = bmp->data;
     
     char* padding_str[padding];
