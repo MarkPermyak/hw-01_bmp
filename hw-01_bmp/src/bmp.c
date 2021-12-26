@@ -1,8 +1,13 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "bmp.h"
 
 bmpFILE* load_bmp(char* filename){
     FILE* bmp = fopen(filename, "rb");
 
+    if(!bmp)
+        return NULL;   
+    
     BITMAPFILEHEADER* bfh = malloc(sizeof(BITMAPFILEHEADER));
     BITMAPINFOHEADER* bih = malloc(sizeof(BITMAPINFOHEADER));
 
@@ -41,12 +46,7 @@ bmpFILE* load_bmp(char* filename){
 
     //fseek(bmp, bfh->bfOffBits, SEEK_SET);
     for(int i = 0; i < h; i++){
-        for (int j = 0; j < w; j++){
-            fread(&data[i][j].blue, 1, 1, bmp);
-            fread(&data[i][j].green, 1, 1, bmp);
-            fread(&data[i][j].red, 1, 1, bmp);
-        }
-        
+        fread(data[i], sizeof(pixel), w, bmp);
         fseek(bmp, padding, SEEK_CUR);
     }
 
@@ -121,21 +121,18 @@ bmpFILE* crop(bmpFILE* bmp, int x, int y, int w_cr, int h_cr){
     for(int i = 0; i < h_cr; i++)
         data_cr[i] = malloc(sizeof(pixel) * w_cr);
 
-    // int starty = h - y - h_cr;
-    // int finishx = x + w_cr + 1;
-
     for(int i = 0; i < h_cr; i++){
         for (int j = 0; j < w_cr; j++){
-            data_cr[i][j].blue = data[h - y - h_cr + i][x + j].blue;
-            data_cr[i][j].green = data[h - y - h_cr + i][x + j].green;
-            data_cr[i][j].red = data[h - y - h_cr + i][x + j].red;
+            data_cr[i][j] = data[h - y - h_cr + i][x + j];
         }
     }
     
     bmp->data = data_cr;
+
+    return bmp;
 };
 
-void rotate(bmpFILE* bmp){
+bmpFILE* rotate(bmpFILE* bmp){
     BITMAPFILEHEADER* bfh = &bmp->bfh;
     BITMAPINFOHEADER* bih = &bmp->bih;
 
@@ -156,13 +153,13 @@ void rotate(bmpFILE* bmp){
     
     for(int i = 0; i < h_r; i++){
         for (int j = 0; j < w_r; j++){
-            data_r[i][j].blue = data[j][w - 1 - i].blue;
-            data_r[i][j].green = data[j][w - 1 - i].green;
-            data_r[i][j].red = data[j][w - 1 - i].red;
+            data_r[i][j] = data[j][w - 1 - i];
         }
     }
 
     bmp->data = data_r;
+    
+    return bmp;
 };
 
 void save_bmp(char* filename, bmpFILE* bmp){
@@ -187,11 +184,7 @@ void save_bmp(char* filename, bmpFILE* bmp){
 
     
     for (int i = 0; i < h; i++){
-        for (int j = 0; j < w; j++){
-            fwrite(&data[i][j].blue, 1, 1, fp);
-            fwrite(&data[i][j].green, 1, 1, fp);
-            fwrite(&data[i][j].red, 1, 1, fp);
-        }
+        fwrite(data[i], sizeof(pixel), w, fp);
         fwrite(padding_str, 1, padding, fp);
     }
 
