@@ -1,11 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "bmp.h"
 
 int main(int argc, char** argv){
 
     if(argc != 8){
         printf("Wrong number of arguments\n");
+        return 1;
+    }
+
+    if(strcmp(argv[1], "crop-rotate")){
+        printf("Wrong operation\n");
         return 1;
     }
 
@@ -27,7 +33,7 @@ int main(int argc, char** argv){
         printf("Input image doesn't exists\n");
         return 1;
     }
-
+    //printf("%d\n", bmp->bih.biSizeImage);
     int width = bmp->bih.biWidth;
     int height = bmp->bih.biHeight;
 
@@ -41,10 +47,12 @@ int main(int argc, char** argv){
         return 1;
     }
 
-    bmpFILE* bmp_cropped = crop(bmp, x, y, w, h);
-    bmpFILE* bmp_croppedrotated = rotate(bmp_cropped);
+    crop(bmp, x, y, w, h);
+    rotate(bmp);
+    // printf("%d\n%d", bmp_cropped->bih.biSizeImage, bmp_croppedrotated->bih.biSizeImage);
+    //printf("%d\n", bmp->bih.biSizeImage);
 
-    save_bmp(out_bmp, bmp_croppedrotated);
+    save_bmp(out_bmp, bmp);
     
     return 0;
 };

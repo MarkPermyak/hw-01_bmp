@@ -107,9 +107,10 @@ bmpFILE* crop(bmpFILE* bmp, int x, int y, int w_cr, int h_cr){
     if(x == bih->biWidth || y == bih->biHeight)
         return bmp;
 
-    int byte1pxl = sizeof(pixel);
-    int padding = (4 - ((w_cr * byte1pxl) % 4)) % 4;
     
+    //int padding = (4 - ((w_cr * sizeof(pixel)) % 4)) % 4;
+    int padding = 0;
+
     bih->biSizeImage = (w_cr + padding) * h_cr * sizeof(pixel);
     bfh->bfSize = bih->biSizeImage + bfh->bfOffBits;
 
