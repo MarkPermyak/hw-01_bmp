@@ -2,17 +2,17 @@
 #include <stdlib.h>
 #include "bmp.h"
 
-bmpFILE* load_bmp(char* filename){
+void load_bmp(char* filename, bmpFILE* work_bmp){
     FILE* bmp = fopen(filename, "rb");
     
-    if(!bmp)
-        return NULL;   
+    // if(!bmp)
+    //     return NULL;   
     
-    BITMAPFILEHEADER* bfh = malloc(sizeof(BITMAPFILEHEADER));
-    BITMAPINFOHEADER* bih = malloc(sizeof(BITMAPINFOHEADER));
+    BITMAPFILEHEADER* bfh = &work_bmp->bfh;
+    BITMAPINFOHEADER* bih = &work_bmp->bih;
 
-    if (!bfh || !bih)
-        return NULL;
+    // if (!bfh || !bih)
+    //     return NULL;
 
     fread(bfh, sizeof(BITMAPFILEHEADER), 1, bmp);
     fread(bih, sizeof(BITMAPINFOHEADER), 1, bmp);
@@ -22,88 +22,118 @@ bmpFILE* load_bmp(char* filename){
     
     int padding = (4 - ((w * sizeof(pixel)) % 4)) % 4;
 
-    pixel** data = malloc(sizeof(pixel*) * h);
+    work_bmp->data = malloc(sizeof(pixel*) * h);
+    pixel* pixels_massive = malloc(sizeof(pixel) * w * h);
+    for (int i = 0; i < h; i++) {
+        work_bmp->data[i] = pixels_massive + i * w;
+    }
+
+    // pixel** data = malloc(sizeof(pixel*) * h);
 
     for(int i = 0; i < h; i++){
-        data[i] = malloc(sizeof(pixel) * w);
-        fread(data[i], sizeof(pixel), w, bmp);
+        // data[i] = malloc(sizeof(pixel) * w);
+        fread(work_bmp->data[i], sizeof(pixel), w, bmp);
         fseek(bmp, padding, SEEK_CUR);
     }
 
     fclose(bmp);
 
-    bmpFILE* bmpfile = malloc(bfh->bfSize);
+    // bmpFILE* bmpfile = malloc(bfh->bfSize);
 
-    if(!bmpfile)
-        return NULL;
+    // if(!bmpfile)
+    //     return NULL;
 
-    bmpfile->bfh = *bfh;
-    bmpfile->bih = *bih;
-    bmpfile->data = data;
+    work_bmp->bfh = *bfh;
+    work_bmp->bih = *bih;
+    //work_bmp->data = data;
 
-    return bmpfile;
+    // return bmpfile;
 };
 
-void free_data(pixel** data, int rows){
-    for(int i=0; i < rows; i++)
-        free(data[i]);
-    
-    free(data);
+void free_data(bmpFILE* bmp){
+    // for(int i=0; i < rows; i++)
+    //     free(data[i]);
+    for(DWORD i =0; i<bmp->bih.biHeight; i++)
+        free(bmp->data[i]);
+    free(bmp->data);
 };
 
-void free_bmp(bmpFILE* bmp){
-    // free(&bmp->bfh);
-    // free(&bmp->bih);
-    //free_bmp_data(bmp);
-    free(bmp);
-};
+// void free_bmp(bmpFILE* bmp){
+//     free(&bmp->bfh);
+//     free(&bmp->bih);
+//     free_data(bmp->data, bmp->bih.biHeight);
+//     free(bmp);
+// };
 
-void crop(bmpFILE* bmp, int x, int y, int w_cr, int h_cr){
-    BITMAPINFOHEADER* bih = &bmp->bih;
+void crop(bmpFILE* bmp, bmpFILE* bmp_cr, int x, int y, int w_cr, int h_cr){
+    BITMAPINFOHEADER* bmp_bih = &bmp->bih;
     pixel** data = bmp->data;
 
-    int h = bih->biHeight;
+    int h = bmp_bih->biHeight;
    
     pixel** data_cr = malloc(sizeof(pixel*) * h_cr);
+    pixel* pixels_massive = malloc(sizeof(pixel) * w_cr * h_cr);
+    for (int i = 0; i < h_cr; i++) {
+        data_cr[i] = pixels_massive + i * w_cr;
+    }
+
 
     for(int i = 0; i < h_cr; i++){        
-        data_cr[i] = malloc(sizeof(pixel) * w_cr);
         data_cr[i] = (pixel*)data[h - y - h_cr + i] + x;
     }    
 
-    bih->biHeight = h_cr;
-    bih->biWidth = w_cr;
+    // for(int i=0; i < h; i++)
+    //     free(data[i]);
+    //free(data);
+
+    // bih->biHeight = h_cr;
+    // bih->biWidth = w_cr;
     
-    bmp->data = data_cr;
-   // free_data(data, h);
+    //bmp->data = data_cr;
+
+    bmp_cr->bfh = bmp->bfh;
+    bmp_cr->bih = bmp->bih;
+    bmp_cr->bih.biHeight = h_cr;
+    bmp_cr->bih.biWidth = w_cr;
+    bmp_cr->data = data_cr;
+    //free_data(bmp);
 };
 
-void rotate(bmpFILE* bmp){
-    BITMAPINFOHEADER* bih = &bmp->bih;
+void rotate(bmpFILE* bmp, bmpFILE* bmp_r){
+    BITMAPINFOHEADER* bmp_bih = &bmp->bih;
     pixel** data = bmp->data;
 
-    int h = bih->biHeight;
-    int w = bih->biWidth;
+    int h = bmp_bih->biHeight;
+    int w = bmp_bih->biWidth;
 
-    bih->biHeight = w;
-    bih->biWidth = h;
+    bmp_r->bfh = bmp->bfh;
+    bmp_r->bih = bmp->bih;
+    bmp_r->bih.biHeight = w;
+    bmp_r->bih.biWidth = h;
 
-    int h_r = bih->biHeight;
-    int w_r = bih->biWidth;
+    int h_r = bmp_bih->biHeight;
+    int w_r = bmp_bih->biWidth;
     
     pixel** data_r = malloc(sizeof(pixel*) * h_r);
-    
-    for(int i = 0; i < h_r; i++)
-        data_r[i] = malloc(sizeof(pixel) * w_r);
+    pixel* pixels_massive = malloc(sizeof(pixel) * w_r * h_r);
+    for (int i = 0; i < h_r; i++) {
+        data_r[i] = pixels_massive + i * w_r;
+    }
+    // for(int i = 0; i < h_r; i++)
+    //     data_r[i] = malloc(sizeof(pixel) * w_r);
     
     for(int i = 0; i < h_r; i++){
         for (int j = 0; j < w_r; j++){
             data_r[i][j] = data[j][w - 1 - i];
         }
     }
-    
-    bmp->data = data_r;
-    //free_data(data, h);
+
+    // for(int i=0; i < h; i++)
+    //     free(data[i]);
+    // free(data);
+
+    bmp_r->data = data_r;
+    //free_data(bmp);
 };
 
 void save_bmp(char* filename, bmpFILE* bmp){
@@ -133,6 +163,10 @@ void save_bmp(char* filename, bmpFILE* bmp){
         fwrite(data[i], sizeof(pixel), w, fp);
         fwrite(padding_str, 1, padding, fp);
     }
+
+    // for(int i=0; i < h; i++)
+    //     free(data[i]);
+    // free(data);
 
     fclose(fp);
 };

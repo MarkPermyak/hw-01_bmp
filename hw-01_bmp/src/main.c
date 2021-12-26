@@ -26,18 +26,20 @@ int main(int argc, char** argv){
         printf("Invalid size of rectangle\n");
         return 1;
     }
+    bmpFILE bmp;
 
-    bmpFILE* bmp = load_bmp(in_bmp);
+    load_bmp(in_bmp, &bmp);
 
-    if(!bmp){
-        printf("Input image doesn't exists\n");
-        return 1;
-    }
+    // if(!bmp){
+    //     printf("Input image doesn't exists\n");
+    //     return 1;
+    // }
 
-    int width = bmp->bih.biWidth;
-    int height = bmp->bih.biHeight;
+    int width = bmp.bih.biWidth;
+    int height = bmp.bih.biHeight;
 
     if(x >= width || y >= height || x < 0 || y < 0){
+        // free_data(&bmp);
         printf("Point is out of bounds\n");
         return 1;
     }
@@ -47,11 +49,19 @@ int main(int argc, char** argv){
         return 1;
     }
 
-    crop(bmp, x, y, w, h);
-    rotate(bmp);
+    bmpFILE bmp_cropped;
+
+    crop(&bmp, &bmp_cropped, x, y, w, h);
+    
+    bmpFILE bmp_cropped_rotated;
+    rotate(&bmp_cropped, &bmp_cropped_rotated);
    
-    save_bmp(out_bmp, bmp);
-    free(bmp);
-    //free_bmp(bmp);
+    save_bmp(out_bmp, &bmp_cropped_rotated);
+    
+    // free_data(&bmp_cropped_rotated);
+    // free_data(&bmp_cropped);
+    // free_data(&bmp);
+
+    // free_bmp(bmp);
     return 0;
 };
