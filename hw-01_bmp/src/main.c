@@ -26,35 +26,36 @@ int main(int argc, char** argv){
         printf("Invalid size of rectangle\n");
         return 1;
     }
+
     bmpFILE bmp;
 
-    load_bmp(in_bmp, &bmp);
-
-    // if(!bmp){
-    //     printf("Input image doesn't exists\n");
-    //     return 1;
-    // }
+    if(load_bmp(in_bmp, &bmp))
+        return 1;
+    
 
     int width = bmp.bih.biWidth;
     int height = bmp.bih.biHeight;
 
     if(x >= width || y >= height || x < 0 || y < 0){
-        // free_data(&bmp);
+        free_data(&bmp);
         printf("Point is out of bounds\n");
         return 1;
     }
     
     if(x + w > width || y + h > height){
+        free_data(&bmp);
         printf("Rectangle is out of bounds\n");
         return 1;
     }
 
     
-    crop(&bmp, x, y, w, h);
-    rotate(&bmp);
+    if(crop(&bmp, x, y, w, h))
+        return 1;
+    
+    if(rotate(&bmp))
+        return 1;
    
     save_bmp(out_bmp, &bmp);
   
-    // free_bmp(bmp);
     return 0;
 };

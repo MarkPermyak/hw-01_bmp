@@ -2,11 +2,17 @@
 #include <stdlib.h>
 #include "bmp.h"
 
-void load_bmp(char* filename, bmpFILE* work_bmp){
+int load_bmp(char* filename, bmpFILE* work_bmp){
     FILE* bmp = fopen(filename, "rb");
     
+    if(!bmp){
+        printf("Input image doesn't exists\n");
+        return 1;
+    }
+
     BITMAPFILEHEADER* bfh = &work_bmp->bfh;
     BITMAPINFOHEADER* bih = &work_bmp->bih;
+    
 
     fread(bfh, sizeof(BITMAPFILEHEADER), 1, bmp);
     fread(bih, sizeof(BITMAPINFOHEADER), 1, bmp);
@@ -17,49 +23,37 @@ void load_bmp(char* filename, bmpFILE* work_bmp){
     int padding = (4 - ((w * sizeof(pixel)) % 4)) % 4;
 
     work_bmp->data = malloc(sizeof(pixel*) * h);
+
     pixel* pixels_row = malloc(sizeof(pixel) * w * h);
 
+    if((!work_bmp->data) || (!pixels_row)){
+        printf("Memory didn't allocated\n");
+        return 1;
+    }
+    
     for (int i = 0; i < h; i++) {
         work_bmp->data[i] = pixels_row + i * w;
     }
 
-    // pixel** data = malloc(sizeof(pixel*) * h);
-
     for(int i = 0; i < h; i++){
-        // data[i] = malloc(sizeof(pixel) * w);
         fread(work_bmp->data[i], sizeof(pixel), w, bmp);
         fseek(bmp, padding, SEEK_CUR);
     }
 
     fclose(bmp);
 
-    // bmpFILE* bmpfile = malloc(bfh->bfSize);
-
-    // if(!bmpfile)
-    //     return NULL;
-
     work_bmp->bfh = *bfh;
     work_bmp->bih = *bih;
-    //work_bmp->data = data;
 
-    // return bmpfile;
+    return 0;
 };
 
 void free_data(bmpFILE* bmp){
-    // for(int i=0; i < rows; i++)
-    //     free(data[i]);
     free(bmp->data[0]);
     free(bmp->data);
 };
 
-// void free_bmp(bmpFILE* bmp){
-//     free(&bmp->bfh);
-//     free(&bmp->bih);
-//     free_data(bmp->data, bmp->bih.biHeight);
-//     free(bmp);
-// };
-
-void crop(bmpFILE* bmp, int x, int y, int w_cr, int h_cr){
+int crop(bmpFILE* bmp, int x, int y, int w_cr, int h_cr){
     BITMAPINFOHEADER* bih = &bmp->bih;
     pixel** data = bmp->data;
 
@@ -67,29 +61,32 @@ void crop(bmpFILE* bmp, int x, int y, int w_cr, int h_cr){
 
     pixel** data_cr = malloc(sizeof(pixel*) * h_cr);
     pixel* pixels_row = malloc(sizeof(pixel) * w_cr * h_cr);
+
+    if((!data_cr) || (!pixels_row)){
+        printf("Memory didn't allocated\n");
+        return 1;
+    }
+
     for (int i = 0; i < h_cr; i++) {
         data_cr[i] = pixels_row + i * w_cr;
     }
-
 
     for(int i = 0; i < h_cr; i++){        
         for(int j=0; j < w_cr; j++)
             data_cr[i][j] = data[h - y - h_cr + i][x + j];
     }    
 
-    // for(int i=0; i < h; i++)
-    // free(bmp->data[0]);
-
     bih->biHeight = h_cr;
     bih->biWidth = w_cr;
 
-    free(data[0]);
-    free(data);    
+    free_data(bmp);
+
     bmp->data = data_cr;
-    //free_data(bmp);
+    
+    return 0;
 };
 
-void rotate(bmpFILE* bmp){
+int rotate(bmpFILE* bmp){
     BITMAPINFOHEADER* bih = &bmp->bih;
     pixel** data = bmp->data;
 
@@ -104,24 +101,27 @@ void rotate(bmpFILE* bmp){
     
     pixel** data_r = malloc(sizeof(pixel*) * h_r);
     pixel* pixels_row = malloc(sizeof(pixel) * w_r * h_r);
+
+    if((!data_r) || (!pixels_row)){
+        printf("Memory didn't allocated\n");
+        return 1;
+    }
+
     for (int i = 0; i < h_r; i++) {
         data_r[i] = pixels_row + i * w_r;
     }
-    // for(int i = 0; i < h_r; i++)
-    //     data_r[i] = malloc(sizeof(pixel) * w_r);
-    
+
     for(int i = 0; i < h_r; i++){
         for (int j = 0; j < w_r; j++){
             data_r[i][j] = data[j][w - 1 - i];
         }
     }
 
-    // for(int i=0; i < h; i++)
-    free(data[0]);
-    free(data);
+    free_data(bmp);
 
     bmp->data = data_r;
-    //free_data(bmp);
+    
+    return 0;
 };
 
 void save_bmp(char* filename, bmpFILE* bmp){
@@ -152,10 +152,6 @@ void save_bmp(char* filename, bmpFILE* bmp){
         fwrite(padding_str, 1, padding, fp);
     }
 
-    // for(int i=0; i < h; i++)
-    //     free(data[i]);
-    free(data[0]);
-    free(data);
-
+    free_data(bmp);
     fclose(fp);
 };
