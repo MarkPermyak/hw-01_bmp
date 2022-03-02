@@ -3,41 +3,7 @@
 #include <algorithm>
 #include "my_vector.hpp"
 
-// class MyVector
-// {
-// public:
-//     MyVector(size_t init_capacity);
 
-//     MyVector(): MyVector(2) {}
-    
-//     MyVector(const MyVector& vector);
-
-//     ~MyVector();
-
-//     MyVector& operator=(const MyVector& vector);
-    
-//     void set(size_t i, int value);
-
-//     int get(size_t i);
-
-//     size_t size();
-
-//     size_t capacity();
-
-//     void resize(size_t new_size);
-
-//     void push_back(int value);
-
-//     void reserve(size_t new_capacity);
-
-//     void insert(size_t index, int value);
-    
-//     void erase(size_t index);
-
-// private:
-//     size_t _size, _capacity;
-//     int * _data;
-// };
 MyVector::MyVector(){
     _capacity = 2;
     _size = 0;
@@ -77,41 +43,41 @@ size_t MyVector::capacity(){
     return _capacity;
 }
 
+void MyVector::reserve(size_t new_capacity){
+    if (new_capacity > _capacity){
+        // int* new_data = new int[new_capacity];
+
+        // for (size_t i = 0; i < _size; i++)
+        //     new_data[i] = _data[i];
+        
+        // delete[] _data;
+ 
+        _data = (int *)realloc(_data, new_capacity * sizeof(int));
+        _capacity = new_capacity;
+    }
+}
+
 void MyVector::resize(size_t new_size){
     if(new_size <= _size)
         for (size_t i = new_size; i < _size; i++)    
             _data[i] = 0;
-        
+    
     else{
-        int* new_data = new int[new_size];
+        //int* new_data = new int[new_size];
         if (new_size > _capacity)
-            _capacity = std::max(2*_capacity, new_size);
+            reserve(std::max(2*_capacity, new_size));
 
-        new_data = (int*) memcpy(new_data, _data, _size*sizeof(int));
-        for (size_t i = _size; i < _size; i++)
-            new_data[i] = 0;
-        
-        _data = new_data;
-
-        delete[] new_data;
-
-
+        for (size_t i = _size; i < _capacity; i++)
+            _data[i] = 0;
+ 
     }
-    _size = new_size;
-}
 
-void MyVector::reserve(size_t new_capacity){
-    if (new_capacity > _capacity)
-        resize(new_capacity);
-    
-    _capacity = new_capacity;
-    
+    _size = new_size;
 }
 
 void MyVector::push_back(int value){
     if(_size >= _capacity){
-        _capacity*=2;
-        resize(_capacity);
+        reserve(_capacity*2);
     }
 
     _data[_size] = value;
@@ -142,4 +108,5 @@ void MyVector::erase(size_t index){
         }
         _data[_size-1] = 0;
     }
+    _size--;
 }
