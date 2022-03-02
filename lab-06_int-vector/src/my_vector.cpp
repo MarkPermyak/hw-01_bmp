@@ -20,7 +20,8 @@ MyVector::MyVector(const MyVector& vector){
     _size = vector._size;
     _capacity = vector._capacity;
     _data = new int[_capacity];
-    memcpy(_data, vector._data, sizeof(int)*_size);
+    if(_data)
+        memcpy(_data, vector._data, sizeof(int)*_size);
 }
 
 MyVector::~MyVector(){
@@ -47,12 +48,13 @@ void MyVector::reserve(size_t new_capacity){
     if (new_capacity > _capacity){
         int* new_data = new int[new_capacity];
 
-        for (size_t i = 0; i < _size; i++)
-            new_data[i] = _data[i];
+        if(new_data){
+            for (size_t i = 0; i < _size; i++)
+                new_data[i] = _data[i];
         
         delete[] _data;
- 
         _data = new_data;
+        }
         _capacity = new_capacity;
     }
 }
@@ -63,7 +65,6 @@ void MyVector::resize(size_t new_size){
             _data[i] = 0;
     
     else{
-        //int* new_data = new int[new_size];
         if (new_size > _capacity)
             reserve(std::max(2*_capacity, new_size));
 
@@ -87,6 +88,7 @@ void MyVector::push_back(int value){
 void MyVector::insert(size_t index, int value){
     if(index == _size)
         push_back(value);
+
     else{
         int tmp = _data[index];
         _data[index] = value;
@@ -102,10 +104,11 @@ void MyVector::insert(size_t index, int value){
 void MyVector::erase(size_t index){
     if (index == _size-1)
         _data[index] = 0;
+    
     else{
-        for(size_t i = index + 1; i < _size; i++){
+        for(size_t i = index + 1; i < _size; i++)
             _data[i - 1] = _data[i];
-        }
+            
         _data[_size-1] = 0;
     }
     _size--;
