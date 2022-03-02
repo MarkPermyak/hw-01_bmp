@@ -7,6 +7,7 @@ class MyVector {
 public:
     MyVector();
     MyVector(std::size_t init_capacity);
+    MyVector(const MyVector& vector);
     ~MyVector();
 
     void set(std::size_t index, int value);
@@ -22,6 +23,8 @@ public:
     void insert(std::size_t index, int value);
     void erase(std::size_t index);
 
+    MyVector& operator=(const MyVector& vector);
+    
 private:
     std::size_t _size, _capacity;
     int * _data;
