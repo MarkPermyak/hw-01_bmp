@@ -45,14 +45,14 @@ size_t MyVector::capacity(){
 
 void MyVector::reserve(size_t new_capacity){
     if (new_capacity > _capacity){
-        // int* new_data = new int[new_capacity];
+        int* new_data = new int[new_capacity];
 
-        // for (size_t i = 0; i < _size; i++)
-        //     new_data[i] = _data[i];
+        for (size_t i = 0; i < _size; i++)
+            new_data[i] = _data[i];
         
-        // delete[] _data;
+        delete[] _data;
  
-        _data = (int *)realloc(_data, new_capacity * sizeof(int));
+        _data = new_data;
         _capacity = new_capacity;
     }
 }
