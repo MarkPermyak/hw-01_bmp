@@ -3,16 +3,16 @@
 CXX=g++
 CXXFLAGS=-std=c++98 -Wall -pedantic
 
-all: main
+all: lab-07_matrix
 
 obj:
 	mkdir -p obj
 
-main: src/main.cpp obj/matrix.o include/*.h obj
+lab-07_matrix: src/main.cpp obj/matrix.o include/*.h obj
 	$(CXX) $(CXXFLAGS) -o $@ -Iinclude $< obj/*
 
 obj/%.o: src/%.cpp include/*.h obj
 	$(CXX) $(CXXFLAGS) -c -o $@ -Iinclude $<
 
 clean:
-	rm -rf obj main
+	rm -rf obj lab-07_matrix

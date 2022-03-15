@@ -1,5 +1,5 @@
-#ifndef LAB_08_MATRIX_H
-#define LAB_08_MATRIX_H
+#ifndef LAB_07_MATRIX_H
+#define LAB_07_MATRIX_H
 
 #include <cstdio>
 #include <cstddef>
@@ -7,6 +7,7 @@
 class Matrix {
 public:
   Matrix(std::size_t r, std::size_t c);
+  Matrix(Matrix& m);
 
   std::size_t get_rows();
   std::size_t get_cols();
@@ -14,6 +15,8 @@ public:
   int get(std::size_t i, std::size_t j);
   void print(FILE *f);
 
+  ~Matrix();
+  Matrix operator=(Matrix& m);
   Matrix operator+(Matrix& m);
   Matrix operator-(Matrix& m);
   Matrix operator*(Matrix& m);
@@ -21,7 +24,7 @@ public:
   Matrix& operator+=(Matrix& m);
   Matrix& operator-=(Matrix& m);
   Matrix& operator*=(Matrix& m);
-
+  
   bool operator==(Matrix& m);
   bool operator!=(Matrix& m);
 private:
