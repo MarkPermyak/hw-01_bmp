@@ -5,22 +5,29 @@
 Matrix::Matrix(std::size_t r, std::size_t c) {
   _rows = r;
   _cols = c;
-  _data = (int **)calloc(r, sizeof(int*));
-  
+  // _data = (int **)calloc(r, sizeof(int*));
+  _data = new int*[r];
   if (_data)
     for(std::size_t i = 0; i < r; i++) 
-        _data[i] = (int *)calloc(c, sizeof(int));
+        _data[i] = new int[c]();
+        // _data[i] = (int *)calloc(c, sizeof(int));
+    for(std::size_t i = 0; i < _rows; i++) 
+      for(std::size_t j = 0; i < _cols; i++) 
+        _data[i][j] = 0;
 }
 
 Matrix::Matrix(const Matrix& m){
   _rows = m._rows;
   _cols = m._cols;
 
-  _data = (int **)calloc(_rows, sizeof(int*));
-  
+  // _data = (int **)calloc(_rows, sizeof(int*));
+  _data = new int*[_rows];
   if(_data){
     for(std::size_t i = 0; i < _rows; i++) 
-        _data[i] = (int *)calloc(_cols, sizeof(int));
+        // _data[i] = (int *)calloc(_cols, sizeof(int));
+        _data[i] = new int[_cols];
+    for(std::size_t i = 0; i < _rows; i++) 
+        _data[i] = 0;
     
     for(std::size_t i = 0; i < _rows; i++)
       for(std::size_t j = 0; j < _cols; j++)
@@ -30,8 +37,8 @@ Matrix::Matrix(const Matrix& m){
 
 Matrix::~Matrix(){
   for (std::size_t i = 0; i < _rows; i++)
-    free(_data[i]);
-  free(_data);
+    delete[] _data[i];
+  delete[] _data;
 }
 
 std::size_t Matrix::get_rows() const { return _rows; }
@@ -72,18 +79,22 @@ bool Matrix::operator!=(const Matrix& m) const {
 
 Matrix& Matrix::operator=(const Matrix& m){
   for (std::size_t i = 0; i < _rows; i++)
-    free(_data[i]);
-  free(_data);
+    delete[] _data[i];
+  delete[] _data;
   
   _rows = m._rows;
   _cols = m._cols;
+  _data = new int*[_rows];
 
-  _data = (int **)calloc(_rows, sizeof(int*));
+  // _data = (int **)calloc(_rows, sizeof(int*));
   
   if(_data){
     for(std::size_t i = 0; i < _rows; i++) 
-        _data[i] = (int *)calloc(_cols, sizeof(int));
-    
+        // _data[i] = (int *)calloc(_cols, sizeof(int));
+        _data[i] = new int[_cols]();
+    for(std::size_t i = 0; i < _rows; i++) 
+      for(std::size_t j = 0; i < _cols; i++) 
+        _data[i][j] = 0;
     for(std::size_t i = 0; i < _rows; i++)
       for(std::size_t j = 0; j < _cols; j++)
         _data[i][j] = m._data[i][j];
