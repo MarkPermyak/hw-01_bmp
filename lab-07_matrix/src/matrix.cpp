@@ -12,7 +12,7 @@ Matrix::Matrix(std::size_t r, std::size_t c) {
         _data[i] = (int *)calloc(c, sizeof(int));
 }
 
-Matrix::Matrix(Matrix& m){
+Matrix::Matrix(const Matrix& m){
   _rows = m._rows;
   _cols = m._cols;
 
@@ -34,18 +34,18 @@ Matrix::~Matrix(){
   free(_data);
 }
 
-std::size_t Matrix::get_rows() { return _rows; }
-std::size_t Matrix::get_cols() { return _cols; }
+std::size_t Matrix::get_rows() const { return _rows; }
+std::size_t Matrix::get_cols() const { return _cols; }
 
 void Matrix::set(std::size_t i, std::size_t j, int val) {
   _data[i][j] = val;
 }
 
-int Matrix::get(std::size_t i, std::size_t j) {
+int Matrix::get(std::size_t i, std::size_t j) const {
   return _data[i][j];
 }
 
-void Matrix::print(FILE* f) {
+void Matrix::print(FILE* f) const {
   for(std::size_t i = 0; i < _rows; i++){
       std::cout << _data[i][0];
       
@@ -56,7 +56,7 @@ void Matrix::print(FILE* f) {
   }
 }
 
-bool Matrix::operator==(Matrix& m) {
+bool Matrix::operator==(const Matrix& m) const {
   bool is_equal = 1;
 
   for(std::size_t i = 0; i < _rows; i++)
@@ -66,11 +66,11 @@ bool Matrix::operator==(Matrix& m) {
   return is_equal;
 }
 
-bool Matrix::operator!=(Matrix& m) {
+bool Matrix::operator!=(const Matrix& m) const {
   return !(m==*this);
 }
 
-Matrix Matrix::operator=(Matrix& m){
+Matrix& Matrix::operator=(const Matrix& m){
   for (std::size_t i = 0; i < _rows; i++)
     free(_data[i]);
   free(_data);
@@ -91,21 +91,21 @@ Matrix Matrix::operator=(Matrix& m){
   return *this;
 }
 
-Matrix& Matrix::operator+=(Matrix& m) {
+Matrix& Matrix::operator+=(const Matrix& m) {
   for(std::size_t i = 0; i < _rows; i++)
     for(std::size_t j = 0; j < _cols; j++)
       _data[i][j] += m._data[i][j];
   return *this;
 }
 
-Matrix& Matrix::operator-=(Matrix& m) {
+Matrix& Matrix::operator-=(const Matrix& m) {
   for(std::size_t i = 0; i < _rows; i++)
     for(std::size_t j = 0; j < _cols; j++)
       _data[i][j] -= m._data[i][j];
   return *this;
 }
 
-Matrix& Matrix::operator*=(Matrix& m) {
+Matrix& Matrix::operator*=(const Matrix& m) {
   Matrix mult(_rows, m._cols);
 
   for(std::size_t i = 0; i < _rows; i++)
@@ -120,21 +120,21 @@ Matrix& Matrix::operator*=(Matrix& m) {
   return *this;
 }
 
-Matrix Matrix::operator+(Matrix& m) {
+Matrix& Matrix::operator+(const Matrix& m) {
   Matrix tmp(_rows, _cols);
   tmp += m;
   tmp += *this;
   return tmp;
 }
 
-Matrix Matrix::operator-(Matrix& m) {
+Matrix& Matrix::operator-(const Matrix& m) {
   Matrix tmp(_rows, _cols);
   tmp -= m;
   tmp += *this;
   return tmp;
 }
 
-Matrix Matrix::operator*(Matrix& m) {
+Matrix& Matrix::operator*(const Matrix& m) {
   Matrix tmp(_rows, _rows);
 
   for(std::size_t i = 0; i < tmp._rows; i++)
