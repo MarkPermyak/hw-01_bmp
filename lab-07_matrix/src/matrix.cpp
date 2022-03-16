@@ -55,12 +55,12 @@ int Matrix::get(std::size_t i, std::size_t j) const {
 
 void Matrix::print(FILE* f) const {
   for(std::size_t i = 0; i < _rows; i++){
-      std::cout << _data[i][0];
+      fprintf(f, "%d", _data[i][0]);
       
       for(std::size_t j = 1; j < _cols; j++)
-        std::cout << " " << _data[i][j] ;
+        fprintf(f, " %d", _data[i][j]) ;
       
-      std::cout << std::endl;
+      fprintf(f, " \n");
   }
 }
 
@@ -96,6 +96,7 @@ Matrix& Matrix::operator=(const Matrix& m){
     for(std::size_t i = 0; i < _rows; i++) 
       for(std::size_t j = 0; j < _cols; j++) 
         _data[i][j] = 0;
+
     for(std::size_t i = 0; i < _rows; i++)
       for(std::size_t j = 0; j < _cols; j++)
         _data[i][j] = m._data[i][j];
@@ -132,21 +133,19 @@ Matrix& Matrix::operator*=(const Matrix& m) {
   return *this;
 }
 
-Matrix& Matrix::operator+(const Matrix& m) {
-  Matrix tmp(_rows, _cols);
+Matrix Matrix::operator+(const Matrix& m) const {
+  Matrix tmp(*this);
   tmp += m;
-  tmp += *this;
   return tmp;
 }
 
-Matrix& Matrix::operator-(const Matrix& m) {
-  Matrix tmp(_rows, _cols);
+Matrix Matrix::operator-(const Matrix& m) const {
+  Matrix tmp(*this);
   tmp -= m;
-  tmp += *this;
   return tmp;
 }
 
-Matrix& Matrix::operator*(const Matrix& m) {
+Matrix Matrix::operator*(const Matrix& m) const {
   Matrix tmp(_rows, _rows);
 
   for(std::size_t i = 0; i < tmp._rows; i++)
