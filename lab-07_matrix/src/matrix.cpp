@@ -27,7 +27,8 @@ Matrix::Matrix(const Matrix& m){
         // _data[i] = (int *)calloc(_cols, sizeof(int));
         _data[i] = new int[_cols];
     for(std::size_t i = 0; i < _rows; i++) 
-        _data[i] = 0;
+      for(std::size_t j = 0; j < _cols; j++) 
+        _data[i][j] = 0;
     
     for(std::size_t i = 0; i < _rows; i++)
       for(std::size_t j = 0; j < _cols; j++)
