@@ -39,6 +39,7 @@ private:
     class Storage {
     public:
         Storage(Matrix* mtx);
+
         ~Storage();
 
         void incr();
@@ -47,7 +48,6 @@ private:
         int getCounter() const;
         Matrix* getObject() const;
 
-    private:
         Matrix *data_;
         int ref_count_;
     };
