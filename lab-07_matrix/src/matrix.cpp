@@ -60,7 +60,7 @@ void Matrix::print(FILE* f) const {
       for(std::size_t j = 1; j < _cols; j++)
         fprintf(f, " %d", _data[i][j]) ;
       
-      fprintf(f, " \n");
+      fprintf(f, "\n");
   }
 }
 
