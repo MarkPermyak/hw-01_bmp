@@ -12,7 +12,7 @@ Matrix::Matrix(std::size_t r, std::size_t c) {
         _data[i] = new int[c]();
         // _data[i] = (int *)calloc(c, sizeof(int));
     for(std::size_t i = 0; i < _rows; i++) 
-      for(std::size_t j = 0; i < _cols; i++) 
+      for(std::size_t j = 0; j < _cols; j++) 
         _data[i][j] = 0;
 }
 
@@ -93,7 +93,7 @@ Matrix& Matrix::operator=(const Matrix& m){
         // _data[i] = (int *)calloc(_cols, sizeof(int));
         _data[i] = new int[_cols]();
     for(std::size_t i = 0; i < _rows; i++) 
-      for(std::size_t j = 0; i < _cols; i++) 
+      for(std::size_t j = 0; j < _cols; j++) 
         _data[i][j] = 0;
     for(std::size_t i = 0; i < _rows; i++)
       for(std::size_t j = 0; j < _cols; j++)
