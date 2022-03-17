@@ -12,7 +12,6 @@ Matrix* shared_ptr::Storage::getObject() const {return data_;}
 shared_ptr::Storage::~Storage(){
     ref_count_--;
     if(ref_count_  == 0){
-        data_->~Matrix();            
         delete data_;
     }
     

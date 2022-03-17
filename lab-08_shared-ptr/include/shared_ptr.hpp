@@ -42,8 +42,8 @@ private:
 
         ~Storage();
 
-        void incr();
-        void decr();
+        // void incr();
+        // void decr();
 
         int getCounter() const;
         Matrix* getObject() const;

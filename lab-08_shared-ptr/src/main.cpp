@@ -23,32 +23,32 @@ shared_ptr make_shared(int seed) {
 }
 
 void test_empty() {
-    // shared_ptr ptr;
-    // assert(ptr.isNull());
-    // assert(ptr.ptr() == 0);
+    shared_ptr ptr;
+    assert(ptr.isNull());
+    assert(ptr.ptr() == 0);
 }
 
 void test_simple() {
-    // Matrix* m = make_matrix(1);
-    // Matrix* ref = make_matrix(1);
-    // shared_ptr ptr(m);
+    Matrix* m = make_matrix(1);
+    Matrix* ref = make_matrix(1);
+    shared_ptr ptr(m);
 
-    // assert(!ptr.isNull());
-    // assert(ptr.ptr() == m);
-    // assert(*ptr.ptr() == *ref);
-    // delete ref;
+    assert(!ptr.isNull());
+    assert(ptr.ptr() == m);
+    assert(*ptr.ptr() == *ref);
+    delete ref;
 }
 
 void test_operators() {
-    // Matrix* ref = make_matrix(1);
-    // shared_ptr ptr = make_shared(1);
+    Matrix* ref = make_matrix(1);
+    shared_ptr ptr = make_shared(1);
     
-    // assert(*ptr == *ref);
-    // assert(ptr->get_rows() == 2);
-    // assert(ptr->get_cols() == 2);
-    // assert((*ptr).get(0, 0) == 1);
+    assert(*ptr == *ref);
+    assert(ptr->get_rows() == 2);
+    assert(ptr->get_cols() == 2);
+    assert((*ptr).get(0, 0) == 1);
 
-    // delete ref;
+    delete ref;
 }
 
 void test_assignment() {
@@ -60,111 +60,111 @@ void test_assignment() {
     p1 = p2;
     assert(*p1 == *make_shared(2));
     assert(*p2 == *make_shared(2));
-    //p2 = p2;
-    //assert(*p2 == *make_shared(2));
+    p2 = p2;
+    assert(*p2 == *make_shared(2));
 }
 
 void test_swap() {
-    // shared_ptr p1 = make_shared(1);
-    // shared_ptr p2 = make_shared(2);
+    shared_ptr p1 = make_shared(1);
+    shared_ptr p2 = make_shared(2);
 
-    // std::swap(p1, p2);
-    // assert(*p1 == *make_shared(2));
-    // assert(*p2 == *make_shared(1));
+    std::swap(p1, p2);
+    assert(*p1 == *make_shared(2));
+    assert(*p2 == *make_shared(1));
 
-    // std::swap(p1, p1);
-    // assert(*p1 == *make_shared(2));
+    std::swap(p1, p1);
+    assert(*p1 == *make_shared(2));
 }
 
 void test_reset() {
-    // shared_ptr p1 = make_shared(1);
-    // Matrix* m = make_matrix(2);
+    shared_ptr p1 = make_shared(1);
+    Matrix* m = make_matrix(2);
 
-    // p1.reset(m);
-    // assert(p1.ptr() == m);
-    // assert(*p1 == *make_shared(2));
-    // p1.reset();
-    // assert(p1.isNull());
-    // assert(p1.ptr() == 0);
+    p1.reset(m);
+    assert(p1.ptr() == m);
+    assert(*p1 == *make_shared(2));
+    p1.reset();
+    assert(p1.isNull());
+    assert(p1.ptr() == 0);
 }
 
 void test_shared() {
-    // Matrix* ref = make_matrix(1);
-    // shared_ptr p1(ref);
-    // shared_ptr p2(p1);
+    Matrix* ref = make_matrix(1);
+    shared_ptr p1(ref);
+    shared_ptr p2(p1);
 
-    // assert(p1.ptr() == ref);
-    // assert(p2.ptr() == ref);
-    // assert(*p1 == *make_shared(1));
-    // assert(*p2 == *make_shared(1));
-    // p1.reset();
-    // assert(p1.isNull());
-    // assert(!p2.isNull());
-    // assert(p2.ptr() == ref);
-    // assert(*p2 == *make_shared(1));
+    assert(p1.ptr() == ref);
+    assert(p2.ptr() == ref);
+    assert(*p1 == *make_shared(1));
+    assert(*p2 == *make_shared(1));
+    p1.reset();
+    assert(p1.isNull());
+    assert(!p2.isNull());
+    assert(p2.ptr() == ref);
+    assert(*p2 == *make_shared(1));
 }
 
 void test_shared_swap() {
-    // shared_ptr a(make_matrix(1));
-    // shared_ptr a1(a);
-    // assert(*a == *make_shared(1));
+    shared_ptr a(make_matrix(1));
+    shared_ptr a1(a);
+    assert(*a == *make_shared(1));
     
-    // shared_ptr a2;
-    // a2 = a;
-    // assert(*a2 == *make_shared(1));
+    shared_ptr a2;
+    a2 = a;
+    assert(*a2 == *make_shared(1));
 
-    // shared_ptr b(make_matrix(6));
-    // shared_ptr b1;
-    // b1 = b;
-    // assert(*b1 == *make_shared(6));
+    shared_ptr b(make_matrix(6));
+    shared_ptr b1;
+    b1 = b;
+    assert(*b1 == *make_shared(6));
 
-    // shared_ptr b2(b1);
-    // assert(*b2 == *make_shared(6));
+    shared_ptr b2(b1);
+    assert(*b2 == *make_shared(6));
     
-    // std::swap(a, b);
-    // assert(*a == *make_shared(6));
-    // assert(*b == *make_shared(1));
+    std::swap(a, b);
+    assert(*a == *make_shared(6));
+    assert(*b == *make_shared(1));
 
-    // std::swap(a, b1);
-    // assert(*a == *make_shared(6));
-    // assert(*b1 == *make_shared(6));
+    std::swap(a, b1);
+    assert(*a == *make_shared(6));
+    assert(*b1 == *make_shared(6));
 
-    // std::swap(a, b);
-    // assert(*a == *make_shared(1));
-    // assert(*b == *make_shared(6));
+    std::swap(a, b);
+    assert(*a == *make_shared(1));
+    assert(*b == *make_shared(6));
 
-    // std::swap(a1, b1);
-    // assert(*a1 == *make_shared(6));
-    // assert(*b1 == *make_shared(1));
+    std::swap(a1, b1);
+    assert(*a1 == *make_shared(6));
+    assert(*b1 == *make_shared(1));
 
-    // std::swap(a1, b1);
-    // std::swap(a2, b2);
-    // assert(*a2 == *make_shared(6));
-    // assert(*b2 == *make_shared(1));
+    std::swap(a1, b1);
+    std::swap(a2, b2);
+    assert(*a2 == *make_shared(6));
+    assert(*b2 == *make_shared(1));
 }
 
 void test_many() {
-    // shared_ptr p;
-    // p = make_shared(7);
-    // shared_ptr p1(p);
-    // shared_ptr p2(p1);
-    // shared_ptr p3(p2);
-    // shared_ptr p4(p);
-    // shared_ptr p5(p1);
-    // shared_ptr p6(p1);
-    // shared_ptr p7(p3);
-    // shared_ptr p8(p7);
-    // shared_ptr p9(p5);
-    // p7.reset();
-    // shared_ptr p10(p7);
-    // shared_ptr p11(p6);
-    // shared_ptr p12(p1);
-    // shared_ptr p13(p2);
-    // p13.reset(make_matrix(12));
-    // shared_ptr p14(p3);
-    // shared_ptr p15(p13);
-    // shared_ptr p16(p12);
-    // shared_ptr p17(p15); 
+    shared_ptr p;
+    p = make_shared(7);
+    shared_ptr p1(p);
+    shared_ptr p2(p1);
+    shared_ptr p3(p2);
+    shared_ptr p4(p);
+    shared_ptr p5(p1);
+    shared_ptr p6(p1);
+    shared_ptr p7(p3);
+    shared_ptr p8(p7);
+    shared_ptr p9(p5);
+    p7.reset();
+    shared_ptr p10(p7);
+    shared_ptr p11(p6);
+    shared_ptr p12(p1);
+    shared_ptr p13(p2);
+    p13.reset(make_matrix(12));
+    shared_ptr p14(p3);
+    shared_ptr p15(p13);
+    shared_ptr p16(p12);
+    shared_ptr p17(p15); 
 }
 
 typedef void (*test_function)();
