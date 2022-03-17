@@ -80,9 +80,7 @@ bool Matrix::operator!=(const Matrix& m) const {
 }
 
 Matrix& Matrix::operator=(const Matrix& m){
-  for (std::size_t i = 0; i < _rows; i++)
-    delete[] _data[i];
-  delete[] _data;
+  this->~Matrix();
   
   _rows = m._rows;
   _cols = m._cols;
