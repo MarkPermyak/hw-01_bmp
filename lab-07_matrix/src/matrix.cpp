@@ -2,38 +2,39 @@
 #include <iostream>
 #include "matrix.h"
 
+int** init_matrix(std::size_t r, std::size_t c){
+  int** matrix = new int*[r];
+
+  if (matrix){
+    for(std::size_t i = 0; i < r; i++) 
+        matrix[i] = new int[c]();
+
+    for(std::size_t i = 0; i < r; i++) 
+      for(std::size_t j = 0; j < c; j++) 
+        matrix[i][j] = 0;
+
+  return matrix;
+  }
+  return 0;
+}
+
 Matrix::Matrix(std::size_t r, std::size_t c) {
   _rows = r;
   _cols = c;
-  // _data = (int **)calloc(r, sizeof(int*));
-  _data = new int*[r];
-  if (_data)
-    for(std::size_t i = 0; i < r; i++) 
-        _data[i] = new int[c]();
-        // _data[i] = (int *)calloc(c, sizeof(int));
-    for(std::size_t i = 0; i < _rows; i++) 
-      for(std::size_t j = 0; j < _cols; j++) 
-        _data[i][j] = 0;
+  _data = init_matrix(_rows, _cols);
 }
 
 Matrix::Matrix(const Matrix& m){
   _rows = m._rows;
   _cols = m._cols;
 
-  // _data = (int **)calloc(_rows, sizeof(int*));
-  _data = new int*[_rows];
-  if(_data){
-    for(std::size_t i = 0; i < _rows; i++) 
-        // _data[i] = (int *)calloc(_cols, sizeof(int));
-        _data[i] = new int[_cols];
-    for(std::size_t i = 0; i < _rows; i++) 
-      for(std::size_t j = 0; j < _cols; j++) 
-        _data[i][j] = 0;
-    
+  _data = init_matrix(_rows, _cols);
+
+  if(_data)  
     for(std::size_t i = 0; i < _rows; i++)
       for(std::size_t j = 0; j < _cols; j++)
         _data[i][j] = m._data[i][j];
-  }
+  
 }
 
 Matrix::~Matrix(){
@@ -85,22 +86,13 @@ Matrix& Matrix::operator=(const Matrix& m){
   
   _rows = m._rows;
   _cols = m._cols;
-  _data = new int*[_rows];
+  _data = init_matrix(_rows, _cols);
 
-  // _data = (int **)calloc(_rows, sizeof(int*));
-  
-  if(_data){
-    for(std::size_t i = 0; i < _rows; i++) 
-        // _data[i] = (int *)calloc(_cols, sizeof(int));
-        _data[i] = new int[_cols]();
-    for(std::size_t i = 0; i < _rows; i++) 
-      for(std::size_t j = 0; j < _cols; j++) 
-        _data[i][j] = 0;
-
+  if(_data)
     for(std::size_t i = 0; i < _rows; i++)
       for(std::size_t j = 0; j < _cols; j++)
         _data[i][j] = m._data[i][j];
-  }
+  
   return *this;
 }
 
