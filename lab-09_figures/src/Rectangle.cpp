@@ -7,10 +7,10 @@ Rectangle::Rectangle(int id, int x, int y, int width, int height) :
 Rectangle::~Rectangle(){}
 
 void Rectangle::print(){
-    std::cout << "Rectangle: " << id << " x = " << x << " y = " << y <<
-     " width = " << width_ << " height = " << height_ << std::endl;
-
+    std::cout <<"Rectangle " << id <<": x = " << x <<" y = "<< y << " width = " 
+    << width_ << " height = " << height_ << std::endl;
 }
+
 
 bool Rectangle::is_inside(int other_x, int other_y){
     return ((2 * abs(other_x - x) <= width_) && (2 * abs(other_y - y) <= height_));
