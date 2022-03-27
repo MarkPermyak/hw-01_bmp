@@ -10,7 +10,7 @@ int main() {
 
     //scheme.push_back_figure(new Circle(5, 2, 2, 2, "kekes"));
     scheme.push_back_figure(new Rectangle(1, 5, 5, 10, 10));
-    scheme.push_back_figure(new Circle(2, 3, 3, 3, "very nice circle"));
+    scheme.push_back_figure(new Circle(2, 5,5, 3, "very nice circle"));
 
     
     scheme.print_all_figures();
