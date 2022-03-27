@@ -12,7 +12,8 @@ void Rectangle::print(){
 }
 
 bool Rectangle::is_inside(int other_x, int other_y){
-    return ((abs(other_x - x) <= width_) && (abs(other_y - y) <= height_));
+    // return ((abs(other_x - x) <= width_) && (abs(other_y - y) <= height_));
+    return ((x - width_ <= other_x) && (other_x <= x+width_) && (y - height_ <= other_y) && (other_y <= y + height_));
 }
 void Rectangle::zoom(int factor){
     width_*=factor;

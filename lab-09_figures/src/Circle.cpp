@@ -13,6 +13,7 @@ void Circle::print(){
 
 bool Circle::is_inside(int other_x, int other_y){
     return (((other_x - x)*(other_x - x) + (other_y - y)*(other_y - y)) <= radius_*radius_);
+    // return ((pow(other_x - x, 2.0) + pow(other_y - y, 2.0) <= pow(radius_, 2.0)));
 }
 void Circle::zoom(int factor){
     radius_*=factor;
