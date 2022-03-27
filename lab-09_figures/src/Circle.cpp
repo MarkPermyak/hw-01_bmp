@@ -6,9 +6,11 @@ Circle::Circle(int id, int x, int y, int radius, const char* label) :
 
 Circle::~Circle(){}
 
+const char* Circle::get_label() const{ return label_.c_str();}
+
 void Circle::print(){
     std::cout <<"Circle " << id <<": x = " << x <<" y = "<< y << " radius = " 
-    << radius_ << " label = " << label_ << '\n';
+    << radius_ << " label = " << get_label() << '\n';
 }
 
 bool Circle::is_inside(int other_x, int other_y){
