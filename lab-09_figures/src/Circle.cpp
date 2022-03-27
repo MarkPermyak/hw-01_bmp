@@ -8,11 +8,11 @@ Circle::~Circle(){}
 
 void Circle::print(){
     std::cout <<"Circle " << id <<": x = " << x <<" y = "<< y << " radius = " 
-    << radius_ << " label = " << label_ << std::endl;
+    << radius_ << " label = " << label_ << '\n';
 }
 
 bool Circle::is_inside(int other_x, int other_y){
-    return (pow(other_x - x, 2.0) + pow(other_y - y, 2.0) <= pow(radius_, 2.0));
+    return ((pow(other_x - x, 2.0) + pow(other_y - y, 2.0) <= pow(radius_, 2.0)));
 }
 void Circle::zoom(int factor){
     radius_*=factor;

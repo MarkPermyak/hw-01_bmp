@@ -8,7 +8,7 @@ Rectangle::~Rectangle(){}
 
 void Rectangle::print(){
     std::cout <<"Rectangle " << id <<": x = " << x <<" y = "<< y << " width = " 
-    << width_ << " height = " << height_ << std::endl;
+    << width_ << " height = " << height_ << '\n';
 }
 
 bool Rectangle::is_inside(int other_x, int other_y){
