@@ -13,7 +13,6 @@ int** init_matrix(std::size_t r, std::size_t c){
   for(std::size_t i = 0; i < r; i++) 
     memset(matrix[i], 0, sizeof(int) * c);
 
-  // std:: cout << sizeof(matrix[0]) << std::endl;
   return matrix;
   
 }
@@ -46,13 +45,9 @@ Matrix::~Matrix(){
 std::size_t Matrix::get_rows() const { return _rows; }
 std::size_t Matrix::get_cols() const { return _cols; }
 
-void Matrix::set(std::size_t i, std::size_t j, int val) {
-  _data[i][j] = val;
-}
+void Matrix::set(std::size_t i, std::size_t j, int val) { _data[i][j] = val; }
 
-int Matrix::get(std::size_t i, std::size_t j) const {
-  return _data[i][j];
-}
+int Matrix::get(std::size_t i, std::size_t j) const { return _data[i][j]; }
 
 void Matrix::print(FILE* f) const {
   for(std::size_t i = 0; i < _rows; i++){
