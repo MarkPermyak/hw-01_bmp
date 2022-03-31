@@ -21,7 +21,7 @@ int main() {
 	v.push_back(2);
 	const int n{3};
 	v.push_back(n);
-	std::cout << v << std::endl;
+	std::cout << v[0] << " "  << v[1] << std::endl;
 
     //test_my_vector<int>(5, 10);
     //test_my_vector<Product>(Product("asdf", 4, 12.0), Product("qwe", -1, 7.5));
