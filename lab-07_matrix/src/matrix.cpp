@@ -27,7 +27,6 @@ Matrix::Matrix(std::size_t r, std::size_t c) {
 Matrix::Matrix(const Matrix& m){
   _rows = m._rows;
   _cols = m._cols;
-
   _data = init_matrix(_rows, _cols);
 
   if(_data)  
@@ -84,22 +83,18 @@ bool Matrix::operator!=(const Matrix& m) const {
 }
 
 Matrix& Matrix::operator=(const Matrix& m){
-  // for (std::size_t i = 0; i < _rows; i++)
-  //   delete[] _data[i];
-  // delete[] _data;
+  this->~Matrix();
   
-  // _rows = m._rows;
-  // _cols = m._cols;
-  // _data = init_matrix(_rows, _cols);
+  _rows = m._rows;
+  _cols = m._cols;
+  _data = init_matrix(_rows, _cols);
 
-  // if(_data)
-  //   for(std::size_t i = 0; i < _rows; i++)
-  //     for(std::size_t j = 0; j < _cols; j++)
-  //       _data[i][j] = m._data[i][j];
-  Matrix tmp(m);
-  std::swap(tmp, *this);
-  tmp.~Matrix();  
-
+  if(_data)  
+    for(std::size_t i = 0; i < _rows; i++)
+        memcpy(_data[i], m._data[i], sizeof(int) * _cols);
+  else
+    exit(1);
+ 
   return *this;
 }
 
