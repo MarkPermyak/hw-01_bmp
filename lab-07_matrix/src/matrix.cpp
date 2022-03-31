@@ -1,21 +1,21 @@
 #include <cstdlib>
 #include <iostream>
+#include <cstring>
+
 #include "matrix.h"
 
 int** init_matrix(std::size_t r, std::size_t c){
   int** matrix = new int*[r];
 
-  if (matrix){
-    for(std::size_t i = 0; i < r; i++) 
-        matrix[i] = new int[c]();
+  for(std::size_t i = 0; i < r; i++) 
+      matrix[i] = new int[c];
 
-    for(std::size_t i = 0; i < r; i++) 
-      for(std::size_t j = 0; j < c; j++) 
-        matrix[i][j] = 0;
+  for(std::size_t i = 0; i < r; i++) 
+    memset(matrix[i], 0, sizeof(int) * c);
 
+  // std:: cout << sizeof(matrix[0]) << std::endl;
   return matrix;
-  }
-  return 0;
+  
 }
 
 Matrix::Matrix(std::size_t r, std::size_t c) {
@@ -32,8 +32,9 @@ Matrix::Matrix(const Matrix& m){
 
   if(_data)  
     for(std::size_t i = 0; i < _rows; i++)
-      for(std::size_t j = 0; j < _cols; j++)
-        _data[i][j] = m._data[i][j];
+        memcpy(_data[i], m._data[i], sizeof(int) * _cols);
+  else
+    exit(1);
   
 }
 
@@ -66,11 +67,14 @@ void Matrix::print(FILE* f) const {
 }
 
 bool Matrix::operator==(const Matrix& m) const {
-  bool is_equal = 1;
+  bool is_equal = true;
 
-  for(std::size_t i = 0; i < _rows; i++)
-    for(std::size_t j = 0; j < _cols; j++)
-      is_equal &= (m._data[i][j] == _data[i][j]);
+  is_equal &= (_rows == m._rows) && (_cols == m._cols);
+
+  if(is_equal)
+    for(std::size_t i = 0; i < _rows; i++)
+      for(std::size_t j = 0; j < _cols; j++)
+        is_equal &= (m._data[i][j] == _data[i][j]);
 
   return is_equal;
 }
@@ -80,19 +84,22 @@ bool Matrix::operator!=(const Matrix& m) const {
 }
 
 Matrix& Matrix::operator=(const Matrix& m){
-  for (std::size_t i = 0; i < _rows; i++)
-    delete[] _data[i];
-  delete[] _data;
+  // for (std::size_t i = 0; i < _rows; i++)
+  //   delete[] _data[i];
+  // delete[] _data;
   
-  _rows = m._rows;
-  _cols = m._cols;
-  _data = init_matrix(_rows, _cols);
+  // _rows = m._rows;
+  // _cols = m._cols;
+  // _data = init_matrix(_rows, _cols);
 
-  if(_data)
-    for(std::size_t i = 0; i < _rows; i++)
-      for(std::size_t j = 0; j < _cols; j++)
-        _data[i][j] = m._data[i][j];
-  
+  // if(_data)
+  //   for(std::size_t i = 0; i < _rows; i++)
+  //     for(std::size_t j = 0; j < _cols; j++)
+  //       _data[i][j] = m._data[i][j];
+  Matrix tmp(m);
+  std::swap(tmp, *this);
+  tmp.~Matrix();  
+
   return *this;
 }
 
@@ -100,6 +107,7 @@ Matrix& Matrix::operator+=(const Matrix& m) {
   for(std::size_t i = 0; i < _rows; i++)
     for(std::size_t j = 0; j < _cols; j++)
       _data[i][j] += m._data[i][j];
+
   return *this;
 }
 
@@ -107,6 +115,7 @@ Matrix& Matrix::operator-=(const Matrix& m) {
   for(std::size_t i = 0; i < _rows; i++)
     for(std::size_t j = 0; j < _cols; j++)
       _data[i][j] -= m._data[i][j];
+
   return *this;
 }
 
@@ -138,13 +147,7 @@ Matrix Matrix::operator-(const Matrix& m) const {
 }
 
 Matrix Matrix::operator*(const Matrix& m) const {
-  Matrix tmp(_rows, _rows);
-
-  for(std::size_t i = 0; i < tmp._rows; i++)
-    tmp._data[i][i] = 1;
-
-  tmp *= *this;
+  Matrix tmp(*this);
   tmp *= m;
-
   return tmp;
 }
