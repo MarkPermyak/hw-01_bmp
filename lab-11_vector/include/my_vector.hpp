@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstring>
+#include <iostream>
 
 namespace containers {
 
@@ -12,12 +13,12 @@ public:
     my_vector();
     my_vector(std::size_t n);
     my_vector(const my_vector& other);
-    my_vector operator=(my_vector other);
+    my_vector<T>& operator=(const my_vector& other);
     ~my_vector();
 
-    std::size_t size();
-    std::size_t capacity();
-    bool empty();
+    std::size_t size() const;
+    std::size_t capacity() const;
+    bool empty() const;
 
     void resize(std::size_t n);
     void reserve(std::size_t n);
@@ -28,6 +29,8 @@ public:
     void pop_back();
     void clear();
 
+    template<typename TP>
+    friend std::ostream& operator<<(std::ostream& os, const my_vector<TP>& v);
 private:
     size_t capacity_;
     size_t size_;
