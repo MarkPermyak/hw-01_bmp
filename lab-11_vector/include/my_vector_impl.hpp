@@ -14,7 +14,7 @@ namespace containers{
     my_vector<T>::my_vector(){
         capacity_ = 2;
         size_ = 0;
-        array_ = (T*)malloc(sizeof(T)*capacity_);
+        array_ = (T*) new char[sizeof(T) * capacity_];
 
         if(!array_)
             exit(1);
@@ -24,48 +24,52 @@ namespace containers{
     my_vector<T>::my_vector(std::size_t n){
         capacity_ = near_pow2(n);
         size_ = n;
-        array_ = (T*)malloc(sizeof(T)*capacity_);
+        array_ = (T*) new char[sizeof(T) * capacity_];
         
         if(!array_)
             exit(1);
 
-        for(std::size_t i = 0; i < n; i++){
-            T new_obj = T();
-            memcpy(array_[i], new_obj, sizeof(new_obj));
-        }
+        for(std::size_t i = 0; i < n; i++)
+            new(&array_[i]) T();
+        
     }
 
     template<typename T>
     my_vector<T>::my_vector(const my_vector<T>& other){
         capacity_ = other.capacity_;
         size_ = other.size_;
-        array_ = (T*)malloc(sizeof(T)*capacity_);
-        
+        array_ = (T*) new char[sizeof(T) * capacity_];
+
         if(!array_)
             exit(1);
 
-        memcpy(array_, other.array_, sizeof(T)*size_);
+        for(std::size_t i = 0; i < size_; i++)
+            new(&array_[i]) T(other.array_[i]);
+
     }
 
     template<typename T>
     my_vector<T>::~my_vector(){
-        free(array_);
+        this->clear();
+        delete[] (char*) array_;
     }
 
     template<typename T>
     void my_vector<T>::reserve(std::size_t new_capacity){
         if(new_capacity > capacity_){
-            T* new_array = (T*)malloc(sizeof(T)*new_capacity);
+            int min_cap = near_pow2(new_capacity);
+            T* new_array = (T*) new char[sizeof(T) * min_cap];
             
             if(!new_array)
                 exit(1);
 
-            memcpy(new_array, array_, sizeof(T)*size_);
+            for(std::size_t i = 0; i < size_; i++)
+                new(&new_array[i]) T(array_[i]);
 
-            free(array_);
+            delete[] (char*) array_;
 
             array_ = new_array;
-            capacity_ = new_capacity;
+            capacity_ = min_cap;
         }
     }
     
@@ -73,7 +77,8 @@ namespace containers{
     void my_vector<T>::push_back(T t){
         if(size_ == capacity_)
             reserve(2*capacity_);
-        array_[size_] = t;
+
+        new(&array_[size_]) T(t);
         size_++;
     }
 
@@ -128,14 +133,16 @@ namespace containers{
         size_ = other.size_;
         capacity_ = other.capacity_;
 
-        T* new_array = (T*)malloc(sizeof(T)*capacity_);
+        T* new_array = (T*) new char[sizeof(T) * capacity_];
         
         if(!new_array)
             exit(1);
 
-        memcpy(new_array, other.array_, sizeof(T)*size_);
+        for(std::size_t i = 0; i < size_; i++)
+            new(&new_array[i]) T(other.array_[i]);
+                
 
-        free(array_);
+        delete[] (char*) array_;
 
         array_ = new_array;
         return *this;
@@ -147,4 +154,5 @@ namespace containers{
             os << v.array_[i] << " ";
         return os;  
     }
+    
 }

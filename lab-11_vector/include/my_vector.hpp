@@ -3,6 +3,8 @@
 
 #include <cstddef>
 #include <cstring>
+#include <iosfwd>
+
 #include <iostream>
 
 namespace containers {
@@ -31,6 +33,7 @@ public:
 
     template<typename TP>
     friend std::ostream& operator<<(std::ostream& os, const my_vector<TP>& v);
+   
 private:
     size_t capacity_;
     size_t size_;
