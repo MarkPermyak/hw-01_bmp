@@ -1,7 +1,10 @@
-#include <fstream>
-#include <sstream>
 #include "archiver.hpp"
+
 using namespace std;
+
+bool archiver::is_empty(ifstream& fs){
+    return fs.peek() == ifstream::traits_type::eof();
+}
 
 string archiver::read_input_text(ifstream& fs){
     stringstream buffer;
@@ -23,50 +26,64 @@ huffman_queue archiver::create_queue_from_table(map<char, int> symbols){
     huffman_queue q;
 
     for (const auto& n : symbols){
-        HuffmanNode* node = createNode(n.first, n.second);
+        huffmanNode* node = new huffmanNode(n.first, n.second);
         q.push(node);
     }
     return q;
 };
 
-void archiver::write_int_byte_to_file(int num, ofstream& outfs){
+void archiver::write_32int_byte_to_file(int num, ofstream& outfs){
+    string int_bin = bitset<32>(num).to_string();
+    int tmp = stoi(int_bin, nullptr, 2);
+    outfs.write((char*)&tmp, sizeof(int));
+}
+
+void archiver::write_8int_byte_to_file(int num, ofstream& outfs){
     string int_bin = bitset<8>(num).to_string();
     int tmp = stoi(int_bin, nullptr, 2);
-    outfs.write((char*)&tmp, 1);
+    outfs.write((char*)&tmp, sizeof(char));
+}
+
+int archiver::read_byte_from_file(std::ifstream& file) {
+    int8_t val;
+    file.read((char*)&val, sizeof(char));
+    return val;
+}
+
+int archiver::read_4byte_from_file(std::ifstream& file) {
+    int32_t val;
+    file.read((char*)&val, sizeof(int));
+    return val;
 }
 
 void archiver::encode(ifstream& fs, ofstream& outfs){
 
+    if (is_empty(fs)){
+        cout << 0 << endl;
+        cout << 0 << endl;
+        cout << 0 << endl;
+        return;
+    } 
+
     string input = read_input_text(fs);
-
-    //cout << input << endl;
-
     
     map<char, int> symbols = create_symbols_table(input); 
-
     
 	    
     // for (const auto& n : symbols) 
     //     cout << n.first << " = " << n.second << "; ";
     // cout << '\n';
 
-    // priority_queue <HuffmanNode*, vector<HuffmanNode*>, decltype(cmp)> q2(cmp);
-    // for (const auto& n : symbols){
-    //     HuffmanNode* node = createNode(n.first, n.second);
-    //     q2.push(node);
-    // }
     
     huffman_queue q = create_queue_from_table(symbols);
 
-    huffman_queue q2 = create_queue_from_table(symbols);
+    // huffman_queue q2 = create_queue_from_table(symbols);
 
     // for (const auto& n : symbols){
-    //     HuffmanNode* node = createNode(n.first, n.second);
+    //     huffmanNode* node = createNode(n.first, n.second);
     //     q.push(node);
     // }
     
-    // HuffmanNode* kek = createNode('w', 3);
-    // q.push(kek);
 
 
     // while(!q2.empty()) {
@@ -75,8 +92,7 @@ void archiver::encode(ifstream& fs, ofstream& outfs){
     // }
     // std::cout << '\n';
 
-    HuffmanTree tree = HuffmanTree(q);
-    // tree.print_desc_leaves(tree.get_root());
+    huffmanTree tree = huffmanTree(q);
 
     map<char, string> code;
     tree.create_code(tree.get_root(), "", code);
@@ -86,29 +102,30 @@ void archiver::encode(ifstream& fs, ofstream& outfs){
     // cout << '\n';
       
     int number_of_symbols = symbols.size();
-    write_int_byte_to_file(number_of_symbols, outfs);
+    // int number_of_symbols = 1025;
+
+    write_32int_byte_to_file(number_of_symbols, outfs);
 
 
     for(const auto& n: symbols){
-        outfs.write((char*)&n.first, 1); //записали символ в int формате
-        write_int_byte_to_file(n.second, outfs);
+        outfs.write((char*)&n.first, sizeof(char)); //записали символ в int формате
+        write_32int_byte_to_file(n.second, outfs);
     }
 
 
     int encoded_text_len = 0;
-    string buffer_;
+    string buffer;
 
     for(size_t i = 0; i < input.length(); i++){
         string codestr = code[input[i]];
         encoded_text_len += codestr.length();
         for(size_t j = 0; j < codestr.length(); j++){
-            buffer_ += codestr[j];
-            // cout << buffer_ << endl;
+            buffer += codestr[j];
 
-            if(buffer_.length() == 8){
-                int tmp = stoi(buffer_, nullptr, 2);
-                outfs.write((char*)&tmp, 1);
-                buffer_.clear();
+            if(buffer.length() == byte_size){
+                int tmp = stoi(buffer, nullptr, 2);
+                outfs.write((char*)&tmp, sizeof(char));
+                buffer.clear();
             }
         }
 
@@ -116,31 +133,35 @@ void archiver::encode(ifstream& fs, ofstream& outfs){
     
     int padding_size = 0;
 
-    if (buffer_.length() % 8 != 0){
-        while(buffer_.length() != 8){
-            buffer_ += "0";
+    if (buffer.length() % byte_size != 0){
+        while(buffer.length() != byte_size){
+            buffer += "0";
             padding_size++;
         }
 
-        int tmp = stoi(buffer_, nullptr, 2);
-        outfs.write((char*)&tmp, 1);
-        buffer_.clear();
+        int tmp = stoi(buffer, nullptr, 2);
+        outfs.write((char*)&tmp, sizeof(char));
+        buffer.clear();
     }
     
-    write_int_byte_to_file(padding_size, outfs);
+    write_8int_byte_to_file(padding_size, outfs);
 
-    fs.close();
-    outfs.close();
-
-}
-
-int read_byte_from_file(std::ifstream& file) {
-    int8_t val;
-    file.read((char*)&val, 1);
-    return val;
+    cout << input.size() << endl;                           //size of input file
+    cout << ceil((double)encoded_text_len / 8.0) << endl;   //size of coded message itself
+    cout << sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char) << endl;            
+    //size of additional info(num of symbols, symbol table, padding size)
+                                                            
+    
 }
 
 void archiver::decode(ifstream& fs, ofstream& outfs){
+    if (is_empty(fs)){
+        cout << 0 << endl;
+        cout << 0 << endl;
+        cout << 0 << endl;
+        return;
+    } 
+
     fs.seekg(0, fs.end);
     int filelength = fs.tellg();
     fs.seekg(0, fs.beg);
@@ -148,12 +169,11 @@ void archiver::decode(ifstream& fs, ofstream& outfs){
     fs.seekg(-1, fs.end);
     int padding_size = read_byte_from_file(fs); //количество добавочных 0 encoded_message
     fs.seekg(0, fs.beg);
-    // cout << length << endl;
-    int number_of_symbols = read_byte_from_file(fs);
-    
-    
-    
-    // cout << padding_size << endl;
+
+    int number_of_symbols = read_4byte_from_file(fs);
+            
+    //cout << filelength << endl;
+    //cout << padding_size << endl;
     // cout << number_of_symbols << endl;
     map<char, int> symbols;
 
@@ -161,29 +181,28 @@ void archiver::decode(ifstream& fs, ofstream& outfs){
     for (int i = 0; i < number_of_symbols; i++){
         int symbol_int = read_byte_from_file(fs);
         char c = symbol_int; //символ в своём int формате
-        // cout << symbol_int << endl;
-        // cout << c << endl;
 
-        int symbol_freq = read_byte_from_file(fs);
-        // cout << symbol_freq << endl;
+        int symbol_freq = read_4byte_from_file(fs);
         symbols[c] = symbol_freq;
     }
 
     // for (const auto& n : symbols) 
     //     cout << n.first << " = " << n.second << "; ";
     // cout << '\n';
+
     huffman_queue q = create_queue_from_table(symbols);
-    HuffmanTree tree = HuffmanTree(q);
+    huffmanTree tree = huffmanTree(q);
 
-    // tree.print_desc_leaves(tree.get_root());
-    int encoded_message_len = filelength - 1 - 2*number_of_symbols - 1;
-    char buffer[encoded_message_len];
+    int encoded_message_len_bytes = filelength - (sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char));
+    //1 byte for number of symbols, 2*number_of_symbols bytes for table, 1 byte for padding size
 
-    fs.read(buffer, encoded_message_len);
+    char buffer[encoded_message_len_bytes];
 
-    tree.decode_from_message(buffer, encoded_message_len, padding_size, outfs);
-    
-    // cout << ((buffer[2] >> 7) & 1) << ((buffer[2] >> 6) & 1) << ((buffer[2] >> 5) & 1) << ((buffer[2] >> 4) & 1);
-    
+    fs.read(buffer, encoded_message_len_bytes);
 
+    int writed_symbols = tree.decode_from_message(buffer, encoded_message_len_bytes, padding_size, outfs);
+
+    cout << encoded_message_len_bytes << endl;
+    cout << writed_symbols << endl;
+    cout << sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char) << endl;
 }
