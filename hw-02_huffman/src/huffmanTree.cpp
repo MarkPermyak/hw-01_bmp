@@ -1,24 +1,35 @@
 #include "huffmanTree.hpp"
-
+#include "archiver.hpp"
 HuffmanNode* createNode(char ch, int freq){
     
-    HuffmanNode* node = new HuffmanNode();
-    node->ch = ch;
-    node->freq = freq;
-    node->left = nullptr;
-    node->right = nullptr;
-
+    HuffmanNode* node = new HuffmanNode(ch, freq);
     return node;
 };
 
-HuffmanNode* HuffmanTree::get_root() { return root; }
+HuffmanTree::HuffmanTree(huffman_queue q){
+    while (q.size() != 1){
+        //когда равные частоты сложно найти минимум, возможно это неважно
 
-// void HuffmanTree::print_left_leaf(HuffmanNode* parent){
-//     HuffmanNode* node = parent;
-//     while(node->left != nullptr)
-//         node = node->left;
-//     cout << node->ch << ": " << node->freq << endl;
-// }
+        HuffmanNode* rnode = q.top();
+        q.pop();
+        HuffmanNode* lnode = q.top();
+        q.pop();
+        
+
+        HuffmanNode* parent = createNode('\0', rnode->freq + lnode->freq);
+        parent->left = lnode;
+        parent->right = rnode;
+        q.push(parent);
+    }
+    root = q.top();
+    q.pop();
+}
+
+HuffmanTree::~HuffmanTree(){
+    delete root;
+}
+
+HuffmanNode* HuffmanTree::get_root() { return root; }
 
 void HuffmanTree::print_desc_leaves(HuffmanNode* parent){
     if(parent->left != nullptr)
@@ -47,7 +58,29 @@ void HuffmanTree::create_code(HuffmanNode* parent, string codeword, map<char, st
     }
         
 }
+void HuffmanTree::decode_from_message(char* buffer, int encoded_message_len_bytes, int padding_size, ofstream& outfs){
+    HuffmanNode* node = root;
 
-// HuffmanTree HuffmanTree::create_tree_from_code(map<char, string> code){
+    int pos = 0;
+    int bit = 0;
+    while(pos != encoded_message_len_bytes){
+        if(pos == encoded_message_len_bytes - 1 && bit == 8 - padding_size) //padding starts
+            break;
 
-// }
+        while(node->left || node->right){
+            if(bit == 8){
+                pos++;
+                bit = 0;
+            }
+            int j_bit = (buffer[pos] >> (7 - bit)) & 1;
+            if(j_bit == 0)
+                node = node->right;
+            else   //j_bit == 1
+                node = node->left;
+            bit++;
+        }
+        outfs.write(&node->ch, sizeof(char));
+        node = root;
+    }
+    //cout << endl;
+}
