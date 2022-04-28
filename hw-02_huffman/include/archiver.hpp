@@ -12,8 +12,8 @@
 
 class archiver{
     public:
-        void encode(std::ifstream& fs, std::ofstream& outfs);
-        void decode(std::ifstream& fs, std::ofstream& outfs);
+        void encode(std::string input_file, std::string output_file);
+        void decode(std::string input_file, std::string output_file);
 
     private:
         const size_t byte_size = 8;

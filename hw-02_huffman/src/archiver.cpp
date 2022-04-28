@@ -56,7 +56,16 @@ int archiver::read_4byte_from_file(std::ifstream& file) {
     return val;
 }
 
-void archiver::encode(ifstream& fs, ofstream& outfs){
+void archiver::encode(std::string input_file, std::string output_file){
+    std::ifstream fs(input_file, std::ios::out | std::ios::binary);
+
+    if(!fs)
+        throw huffmanArchiverException("Input file error");
+
+    std::ofstream outfs(output_file, std::ios::out | std::ios::binary);
+    
+    if(!outfs)
+        throw huffmanArchiverException("Output file error");
 
     if (is_empty(fs)){
         cout << 0 << endl;
@@ -151,10 +160,21 @@ void archiver::encode(ifstream& fs, ofstream& outfs){
     cout << sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char) << endl;            
     //size of additional info(num of symbols, symbol table, padding size)
                                                             
-    
+    fs.close();
+    outfs.close();
 }
 
-void archiver::decode(ifstream& fs, ofstream& outfs){
+void archiver::decode(std::string input_file, std::string output_file){
+    std::ifstream fs(input_file, std::ios::out | std::ios::binary);
+
+    if(!fs)
+        throw huffmanArchiverException("Input file error");
+
+    std::ofstream outfs(output_file, std::ios::out | std::ios::binary);
+    
+    if(!outfs)
+        throw huffmanArchiverException("Output file error");
+
     if (is_empty(fs)){
         cout << 0 << endl;
         cout << 0 << endl;
@@ -205,4 +225,7 @@ void archiver::decode(ifstream& fs, ofstream& outfs){
     cout << encoded_message_len_bytes << endl;
     cout << writed_symbols << endl;
     cout << sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char) << endl;
+    
+    fs.close();
+    outfs.close();
 }

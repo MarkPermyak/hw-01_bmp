@@ -21,6 +21,12 @@ include $(wildcard $(OBJDIR)/*.d)
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
+obj/test.o: test/doctest.h test/test.cpp src/archiver.cpp
+	g++ -c $(CFLAGS) test/test.cpp -o obj/test.o
+
+test: obj obj/huffmanTree.o obj/archiver.o obj/test.o
+	g++ obj/huffmanTree.o obj/archiver.o obj/test.o -o hw-02_huffman_test
+
 clean:
 	rm -rf $(OBJDIR) $(EXE)
 

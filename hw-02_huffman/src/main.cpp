@@ -4,8 +4,8 @@
 #include "archiver.hpp"
 
 int main(int argc, char** argv){
-    char* filename = NULL;
-    char* output = NULL;
+    char* input_file = NULL;
+    char* output_file = NULL;
 
     bool compress = false;
     bool decompress = false;
@@ -17,12 +17,12 @@ int main(int argc, char** argv){
             throw huffmanArchiverException("Invalid number of arguments");
         for(int i = 0; i < argc; i++){
             if (std::string(argv[i]) == "-f" || std::string(argv[i]) == "--file"){
-                filename = argv[i+1];
+                input_file = argv[i+1];
                 inarg = true;
             }
             
-            if (std::string(argv[i]) == "-o" || std::string(argv[i]) == "--output"){
-                output = argv[i+1];
+            if (std::string(argv[i]) == "-o" || std::string(argv[i]) == "--output_file"){
+                output_file = argv[i+1];
                 outarg = true;
             }
             
@@ -44,23 +44,13 @@ int main(int argc, char** argv){
 
         archiver huff;    
         
-        std::ifstream fs(filename, std::ios::out | std::ios::binary);
-
-        if(!fs)
-            throw huffmanArchiverException("Input file error");
-
-        std::ofstream outfs(output, std::ios::out | std::ios::binary);
         
-        if(!outfs)
-            throw huffmanArchiverException("Output file error");
         
         if(compress)
-            huff.encode(fs, outfs);
+            huff.encode(input_file, output_file);
         if(decompress)
-            huff.decode(fs ,outfs);
+            huff.decode(input_file, output_file);
         
-        fs.close();
-        outfs.close();
     }
     catch(huffmanArchiverException& e){
         std::cerr << e.what() << '\n';
