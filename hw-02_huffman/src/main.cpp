@@ -15,6 +15,7 @@ int main(int argc, char** argv){
     try{
         if(argc != 6)
             throw huffmanArchiverException("Invalid number of arguments");
+            
         for(int i = 0; i < argc; i++){
             if (std::string(argv[i]) == "-f" || std::string(argv[i]) == "--file"){
                 input_file = argv[i+1];

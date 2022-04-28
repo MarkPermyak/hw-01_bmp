@@ -78,47 +78,21 @@ void archiver::encode(std::string input_file, std::string output_file){
     
     map<char, int> symbols = create_symbols_table(input); 
     
-	    
-    // for (const auto& n : symbols) 
-    //     cout << n.first << " = " << n.second << "; ";
-    // cout << '\n';
-
-    
     huffman_queue q = create_queue_from_table(symbols);
-
-    // huffman_queue q2 = create_queue_from_table(symbols);
-
-    // for (const auto& n : symbols){
-    //     huffmanNode* node = createNode(n.first, n.second);
-    //     q.push(node);
-    // }
-    
-
-
-    // while(!q2.empty()) {
-    //     std::cout << q2.top()->ch << ": " << q2.top()->freq << ", ";
-    //     q2.pop();
-    // }
-    // std::cout << '\n';
 
     huffmanTree tree = huffmanTree(q);
 
     map<char, string> code;
     tree.create_code(tree.get_root(), "", code);
-
-    // for (const auto& n : code) 
-    //     cout << n.first << " = " << n.second << "; ";
-    // cout << '\n';
       
     int number_of_symbols = symbols.size();
-    // int number_of_symbols = 1025;
 
     write_32int_byte_to_file(number_of_symbols, outfs);
 
 
     for(const auto& n: symbols){
-        outfs.write((char*)&n.first, sizeof(char)); //записали символ в int формате
-        write_32int_byte_to_file(n.second, outfs);
+        outfs.write((char*)&n.first, sizeof(char)); //записали символ в int8 формате
+        write_32int_byte_to_file(n.second, outfs);  //записали его частоту в int32 формате
     }
 
 
@@ -153,7 +127,7 @@ void archiver::encode(std::string input_file, std::string output_file){
         buffer.clear();
     }
     
-    write_8int_byte_to_file(padding_size, outfs);
+    write_8int_byte_to_file(padding_size, outfs);           //записали padding в int8 формате
 
     cout << input.size() << endl;                           //size of input file
     cout << ceil((double)encoded_text_len / 8.0) << endl;   //size of coded message itself
@@ -187,28 +161,21 @@ void archiver::decode(std::string input_file, std::string output_file){
     fs.seekg(0, fs.beg);
 
     fs.seekg(-1, fs.end);
-    int padding_size = read_byte_from_file(fs); //количество добавочных 0 encoded_message
+    int padding_size = read_byte_from_file(fs); //количество добавочных 0 в последнем байте encoded_message
     fs.seekg(0, fs.beg);
 
     int number_of_symbols = read_4byte_from_file(fs);
-            
-    //cout << filelength << endl;
-    //cout << padding_size << endl;
-    // cout << number_of_symbols << endl;
+        
     map<char, int> symbols;
 
     
     for (int i = 0; i < number_of_symbols; i++){
         int symbol_int = read_byte_from_file(fs);
-        char c = symbol_int; //символ в своём int формате
+        char c = symbol_int;                    //символ в своём int8 формате
 
         int symbol_freq = read_4byte_from_file(fs);
         symbols[c] = symbol_freq;
     }
-
-    // for (const auto& n : symbols) 
-    //     cout << n.first << " = " << n.second << "; ";
-    // cout << '\n';
 
     huffman_queue q = create_queue_from_table(symbols);
     huffmanTree tree = huffmanTree(q);
