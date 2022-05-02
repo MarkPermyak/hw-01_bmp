@@ -12,8 +12,10 @@ int** init_matrix(std::size_t r, std::size_t c){
 
     for(std::size_t i = 0; i < r; i++){ 
         matrix[i] = new int[c];
-        if (!matrix[i])
+        if (!matrix[i]){
+            delete[] matrix;
             throw MatrixException("Unable to allocate memory.");
+        }
     }
 
     for(std::size_t i = 0; i < r; i++) 

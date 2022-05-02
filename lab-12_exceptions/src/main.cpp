@@ -57,6 +57,10 @@ int main(){
                 a.elem(reg, row, col);
             }
         }
+        catch (std::bad_alloc& e) {
+            std::cout << "Unable to allocate memory." << std::endl;
+            continue;
+        }
         catch(const std::exception& e){
             std::cout << e.what() << '\n';
         }
