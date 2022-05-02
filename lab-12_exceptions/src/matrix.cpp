@@ -167,16 +167,9 @@ Matrix read_matrix_from_file(std::string filename){
         
     int rows, cols;
     
-    if(fs.eof()) 
+    if(!(fs >> rows >> cols))
         throw MatrixException("LOAD: invalid file format.");
-    else{
-        fs >> rows;
-    
-    if(fs.eof()) 
-        throw MatrixException("LOAD: invalid file format.");
-    else
-        fs >> cols;
-    }
+
     // if(!rows || !cols)
     //     throw MatrixException("LOAD: invalid file format.");
 
