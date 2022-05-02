@@ -65,17 +65,13 @@ int Matrix::get(std::size_t i, std::size_t j) const {
 }
 
 void Matrix::print() const {
-    // FILE* f = stdout;
     if(_rows != 0 || _cols != 0)    
         for(std::size_t i = 0; i < _rows; i++){
-            // fprintf(f, "%d", _data[i][0]);
             std::cout << _data[i][0];
             
             for(std::size_t j = 1; j < _cols; j++)
-                // fprintf(f, " %d", _data[i][j]) ;
                 std::cout << " " << _data[i][j];
             
-            // fprintf(f, "\n");
             std::cout << "\n";
         }
 }
@@ -190,7 +186,6 @@ Matrix read_matrix_from_file(std::string filename){
             m.set(i, j, data[i][j]);
 
     fs.close();
-    // m.print();
 
     return m;
 }
