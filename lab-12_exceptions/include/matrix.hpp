@@ -22,7 +22,6 @@ class Matrix {
     void set(std::size_t i, std::size_t j, const int& val);
     int get(std::size_t i, std::size_t j) const;
     void print() const;
-      friend std::ostream& operator<<(std::ostream&, const Matrix&);
 
     ~Matrix();
     Matrix& operator=(const Matrix& m);
