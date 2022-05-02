@@ -62,16 +62,18 @@ int Matrix::get(std::size_t i, std::size_t j) const {
     return _data[i][j]; 
 }
 
-void Matrix::print() const {
-    FILE* f = stdout;
-    for(std::size_t i = 0; i < _rows; i++){
-        fprintf(f, "%d", _data[i][0]);
-        
-        for(std::size_t j = 1; j < _cols; j++)
-            fprintf(f, " %d", _data[i][j]) ;
-        
-        fprintf(f, "\n");
+std::ostream &operator<<(std::ostream &out, const Matrix &matrix) {
+    for (std::size_t i = 0; i < matrix._rows; i++) {
+        if (i)
+            out << '\n';
+        for (std::size_t j = 0; j < matrix._cols; j++) {
+            if (j)
+                out << ' ';
+            out << matrix._data[i][j];
+        }
     }
+
+    return out;
 }
 
 bool Matrix::operator==(const Matrix& m) const {
@@ -195,7 +197,7 @@ void Registers::load(const Matrix& m, int reg){
 }
 
 void Registers::print(int reg) const{
-    registers[reg].print();
+    std::cout << registers[reg] << std::endl;
 }
 
 void Registers::add(int reg1, int reg2){

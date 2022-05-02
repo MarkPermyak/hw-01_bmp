@@ -21,7 +21,7 @@ class Matrix {
     std::size_t get_cols() const;
     void set(std::size_t i, std::size_t j, const int& val);
     int get(std::size_t i, std::size_t j) const;
-    void print() const;
+    // void print() const;
 
     ~Matrix();
     Matrix& operator=(const Matrix& m);
@@ -36,7 +36,8 @@ class Matrix {
     bool operator==(const Matrix& m) const;
     bool operator!=(const Matrix& m) const;
     
-    
+    friend std::ostream& operator<<(std::ostream&, const Matrix&);
+
     private:
     std::size_t _rows;
     std::size_t _cols;
