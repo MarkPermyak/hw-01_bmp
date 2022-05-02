@@ -185,11 +185,12 @@ Matrix read_matrix_from_file(std::string filename){
     int data[rows][cols];
     for(int i = 0; i < rows; i++)
         for(int j = 0; j < cols; j++){
-            if(fs.eof())
+        
+            if(!(fs >> data[i][j]))
                 throw MatrixException("LOAD: invalid file format.");
 
-            fs >> data[i][j];
         }
+    
 
     Matrix m = Matrix(rows, cols);
 
