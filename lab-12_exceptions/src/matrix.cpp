@@ -64,17 +64,18 @@ int Matrix::get(std::size_t i, std::size_t j) const {
 
 void Matrix::print() const {
     // FILE* f = stdout;
-    for(std::size_t i = 0; i < _rows; i++){
-        // fprintf(f, "%d", _data[i][0]);
-        std::cout << _data[i][0];
-        
-        for(std::size_t j = 1; j < _cols; j++)
-            // fprintf(f, " %d", _data[i][j]) ;
-            std::cout << " " << _data[i][j];
-        
-        // fprintf(f, "\n");
-        std::cout << std::endl;
-    }
+    if(_rows != 0 || _cols != 0)    
+        for(std::size_t i = 0; i < _rows; i++){
+            // fprintf(f, "%d", _data[i][0]);
+            std::cout << _data[i][0];
+            
+            for(std::size_t j = 1; j < _cols; j++)
+                // fprintf(f, " %d", _data[i][j]) ;
+                std::cout << " " << _data[i][j];
+            
+            // fprintf(f, "\n");
+            std::cout << std::endl;
+        }
 }
 
 bool Matrix::operator==(const Matrix& m) const {
