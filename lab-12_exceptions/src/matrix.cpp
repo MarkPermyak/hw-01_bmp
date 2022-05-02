@@ -62,18 +62,19 @@ int Matrix::get(std::size_t i, std::size_t j) const {
     return _data[i][j]; 
 }
 
-std::ostream &operator<<(std::ostream &out, const Matrix &matrix) {
-    for (std::size_t i = 0; i < matrix._rows; i++) {
-        if (i)
-            out << '\n';
-        for (std::size_t j = 0; j < matrix._cols; j++) {
-            if (j)
-                out << ' ';
-            out << matrix._data[i][j];
-        }
+void Matrix::print() const {
+    // FILE* f = stdout;
+    for(std::size_t i = 0; i < _rows; i++){
+        // fprintf(f, "%d", _data[i][0]);
+        std::cout << _data[i][0];
+        
+        for(std::size_t j = 1; j < _cols; j++)
+            // fprintf(f, " %d", _data[i][j]) ;
+            std::cout << " " << _data[i][j];
+        
+        // fprintf(f, "\n");
+        std::cout << std::endl;
     }
-
-    return out;
 }
 
 bool Matrix::operator==(const Matrix& m) const {
@@ -125,19 +126,24 @@ Matrix& Matrix::operator-=(const Matrix& m) {
     return *this;
 }
 
-Matrix Matrix::operator*(const Matrix &matrix) const {
-    if (_cols != matrix._rows)
+Matrix& Matrix::operator*=(const Matrix& m) {
+    if( _cols != m._rows)
         throw MatrixException("MUL: #arg1.columns != #arg2.rows.");
 
-    Matrix matrix_result(_rows, matrix._cols);
+    Matrix mult(_rows, m._cols);
 
-    for (std::size_t i = 0; i < matrix_result._rows; i++)
-        for (std::size_t j = 0; j < matrix_result._cols; j++)
-            for (std::size_t k = 0; k < _cols; k++)
-                matrix_result._data[i][j] += _data[i][k] * matrix._data[k][j];
+    for(std::size_t i = 0; i < _rows; i++)
+        for(std::size_t j = 0; j < m._cols; j++)
+            for(std::size_t k = 0; k < _cols; k++)
+                mult._data[i][j] += _data[i][k]*m._data[k][j];    
 
-    return matrix_result;
+    _cols = m._cols;
+
+    *this = mult;
+
+    return *this;
 }
+
 Matrix Matrix::operator+(const Matrix& m) const {
     Matrix tmp(*this);
     tmp += m;
@@ -150,9 +156,10 @@ Matrix Matrix::operator-(const Matrix& m) const {
     return tmp;
 }
 
-Matrix &Matrix::operator*=(const Matrix &matrix) {
-    *this = *this * matrix;
-    return *this;
+Matrix Matrix::operator*(const Matrix& m) const {
+    Matrix tmp(*this);
+    tmp *= m;
+    return tmp;
 }
 
 Matrix read_matrix_from_file(std::string filename){
@@ -165,17 +172,14 @@ Matrix read_matrix_from_file(std::string filename){
     
     if(!(fs >> rows >> cols))
         throw MatrixException("LOAD: invalid file format.");
-   
+
     int data[rows][cols];
     for(int i = 0; i < rows; i++)
         for(int j = 0; j < cols; j++){
-        
             if(!(fs >> data[i][j]))
                 throw MatrixException("LOAD: invalid file format.");
-
         }
     
-
     Matrix m = Matrix(rows, cols);
 
     for(int i = 0; i < rows; i++)
@@ -197,7 +201,7 @@ void Registers::load(const Matrix& m, int reg){
 }
 
 void Registers::print(int reg) const{
-    std::cout << registers[reg] << std::endl;
+    registers[reg].print();
 }
 
 void Registers::add(int reg1, int reg2){
