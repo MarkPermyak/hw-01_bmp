@@ -21,6 +21,11 @@ namespace linq {
 		template<typename T, typename U, typename F>
 		class select_enumerator;
 
+		template<typename T, typename F>
+		class until_enumerator;
+
+		template<typename T, typename F>
+		class where_enumerator;		
 
 		template<typename T>
 		class enumerator {
@@ -42,6 +47,28 @@ namespace linq {
 		  	template<typename U = T, typename F>
 			auto select(F func) {
 				return select_enumerator<U, T, F>(*this, std::move(func));		
+			}
+
+		 	template<typename F>
+			auto until(F func) {
+				return until_enumerator(*this, std::move(func));
+			}
+
+			auto until_eq(const T & value) {
+				return until_enumerator(*this, [&value](const T & current_elem) { 
+					return current_elem == value; 
+				});
+			}
+
+			template<typename F>
+			auto where(F func) {
+				return where_enumerator(*this, std::move(func));
+			}
+
+			auto where_neq(const T & value) {
+				return where_enumerator(*this, [&value](const T & current_elem) { 
+					return current_elem != value; 
+				});
 			}
 
 			template<typename Iter>
@@ -156,6 +183,58 @@ namespace linq {
 			enumerator<U> & parent_;
 			F func_;
 		};
+
+		template<typename T, typename F>
+		class until_enumerator : public enumerator<T> {
+		public:
+			until_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(std::move(predicate)) {}
+
+			T operator *() override {
+				return *parent_;	
+			}
+
+			void operator ++() override {
+				++parent_;
+			}
+
+			explicit operator bool() override {
+				return static_cast<bool>(parent_) && !predicate_(operator *());
+			}
+
+		private:
+			enumerator<T> & parent_;
+			F predicate_;	
+		};
+
+		template<typename T, typename F>
+		class where_enumerator : public enumerator<T> {
+		public:
+			where_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(std::move(predicate)) {}
+
+			T operator *() override {
+				skip_not_satisfying();
+				return *parent_;	
+			}
+
+			void operator ++() override {
+				++parent_;
+				skip_not_satisfying();
+			}
+
+			explicit operator bool() override {
+				skip_not_satisfying();
+				return static_cast<bool>(parent_);
+			}
+
+		private:
+			void skip_not_satisfying() {
+				while (static_cast<bool>(parent_) && !predicate_(*parent_))
+					++parent_; 	
+			}
+
+			enumerator<T> & parent_;
+			F predicate_;	
+		};	
 
 	} 
 
