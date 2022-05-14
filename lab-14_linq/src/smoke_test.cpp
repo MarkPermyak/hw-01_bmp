@@ -67,10 +67,24 @@ void example4() {
   assert(oss.str() == "2\n4\n");
 }
 
+void example5() {
+  std::vector<int> v1 = { 1, 2, 3 };
+
+  std::vector<int> res =
+    from(v1.begin(), v1.end())
+    .take(5)
+    .drop(6)
+    .to_vector();
+
+  assert(res == std::vector<int>());
+}
+
 int main() {
   example1();
   example2();
   example3();
   example4();
+  example5();
+  
   return 0;
 }
