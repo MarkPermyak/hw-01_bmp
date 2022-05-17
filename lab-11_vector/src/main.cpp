@@ -66,7 +66,9 @@ void test_my_vector() {
     assert(!v.empty());
     v.clear();
     assert(v.empty());
-    std::cout << w << std::endl;
+    // std::cout << w << std::endl;
+    std::cout << "Passed regular tests" << std::endl;
+
 }
 
 template<typename T>
@@ -101,22 +103,16 @@ void test_my_vector_default_constructible() {
    
     v.clear();
     assert(v.empty());
-    std::cout << w << std::endl;
-
+    // std::cout << w << std::endl;
+    std::cout << "Passed default constructible tests" << std::endl;
+    
 }
 
 int main() {
-    // containers::my_vector<product::Product> w;
-    // product::Product q("kek", 3, 4.3);
-//  product::Product q("kek", 3, 4.3);
-    // product::Product p("asdf", 2, 3.0);
-
-    // w.push_back(p);
-    // w.push_back(q);
+    
     test_my_vector<int>();
     test_my_vector<product::Product>();
     test_my_vector_default_constructible<int>();
-    //    std::cout << w << std::endl;
 
     return 0;
 }

@@ -66,6 +66,8 @@ namespace containers{
             for(std::size_t i = 0; i < size_; i++)
                 new(&new_array[i]) T(array_[i]);
 
+            for(std::size_t i = 0; i < size_; i++)
+                array_[i].~T(); 
             delete[] (char*) array_;
 
             array_ = new_array;
@@ -74,7 +76,7 @@ namespace containers{
     }
     
     template<typename T>
-    void my_vector<T>::push_back(T t){
+    void my_vector<T>::push_back(const T& t){
         if(size_ == capacity_)
             reserve(2*capacity_);
 
@@ -119,12 +121,12 @@ namespace containers{
     template<typename T>
     void my_vector<T>::clear(){
         for(std::size_t i = 0; i < size_; i++)
-            pop_back();
+            array_[i].~T(); 
         size_ = 0;
     }
 
     template<typename T>
-    T my_vector<T>::operator[](std::size_t index){
+    T const my_vector<T>::operator[](std::size_t index) const{
         return array_[index];
     }
 

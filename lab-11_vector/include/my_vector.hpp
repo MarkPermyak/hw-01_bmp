@@ -25,9 +25,9 @@ public:
     void resize(std::size_t n);
     void reserve(std::size_t n);
 
-    T operator[](std::size_t index);
+    T const operator[](std::size_t index) const;
 
-    void push_back(T t);
+    void push_back(const T& t);
     void pop_back();
     void clear();
 
