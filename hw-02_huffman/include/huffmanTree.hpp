@@ -19,10 +19,8 @@ struct huffmanNode{
     }
 
     ~huffmanNode(){
-        if(left)
-            delete left;
-        if(right)
-            delete right;
+        delete left;
+        delete right;
     }
 };
 
@@ -37,15 +35,15 @@ typedef std::priority_queue<huffmanNode*, std::vector<huffmanNode*>, nodeCompara
 
 class huffmanTree{
 public:
-    huffmanTree(huffman_queue q);
+    huffmanTree(huffman_queue& q);
     ~huffmanTree();
 
     int get_size();
     huffmanNode* get_root();
 
     void print_desc_leaves(huffmanNode* parent);
-    void create_code(huffmanNode* parent, std::string codeword, std::map<char, std::string> &code);
-    int decode_from_message(char* buffer, int encoded_message_len_bytes, int padding_size, std::ofstream& outfs);
+    void create_code(huffmanNode* parent, const std::string& codeword, std::map<char, std::string>& code);
+    int decode_from_message(const char* buffer, int encoded_message_len_bytes, int padding_size, std::ofstream& outfs);
 
 private:
     const int byte_size = 8;

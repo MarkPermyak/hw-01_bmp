@@ -1,7 +1,7 @@
 #include "huffmanTree.hpp"
 #include "archiver.hpp"
 
-huffmanTree::huffmanTree(huffman_queue q){
+huffmanTree::huffmanTree(huffman_queue& q){
     while (q.size() != 1){
         huffmanNode* rnode = q.top();
         q.pop();
@@ -37,7 +37,7 @@ void huffmanTree::print_desc_leaves(huffmanNode* parent){
         std::cout << parent->ch << ": " << parent->freq << std::endl;
 }
 
-void huffmanTree::create_code(huffmanNode* parent, std::string codeword, std::map<char, std::string> &code){
+void huffmanTree::create_code(huffmanNode* parent, const std::string& codeword, std::map<char, std::string>& code){
     //1 слева, 0 справа
     if(parent->left != nullptr)
         create_code(parent->left, codeword + "1", code);
@@ -53,38 +53,31 @@ void huffmanTree::create_code(huffmanNode* parent, std::string codeword, std::ma
     }
         
 }
-int huffmanTree::decode_from_message(char* buffer, int encoded_message_len_bytes, int padding_size, std::ofstream& outfs){
+int huffmanTree::decode_from_message(const char* buffer, int encoded_message_len_bytes, int padding_size, std::ofstream& outfs){
     huffmanNode* node = root;
 
     int writed_symbols = 0;
+    
+    int pos = 0;
+    int bit = 0;
+    while(pos != encoded_message_len_bytes){
+        if(pos == encoded_message_len_bytes - 1 && bit == byte_size - padding_size) //padding starts
+            break;
 
-    if(tree_size == 1){
-        int pos = 0;
-        int bit = 0;
-        while(pos != encoded_message_len_bytes){
-            if(pos == encoded_message_len_bytes - 1 && bit == byte_size - padding_size) //padding starts
-                break;
+        if(tree_size == 1){        
             if(bit == byte_size){
                 pos++;
                 bit = 0;
             }
-            outfs.write(&node->ch, sizeof(char));
-            bit++;
-            writed_symbols++;
+           
         }
-    }
-    else{
-        int pos = 0;
-        int bit = 0;
-        while(pos != encoded_message_len_bytes){
-            if(pos == encoded_message_len_bytes - 1 && bit == byte_size - padding_size) //padding starts
-                break;
-
+        else{
             while(node->left || node->right){
                 if(bit == byte_size){
                     pos++;
                     bit = 0;
                 }
+
                 int j_bit = (buffer[pos] >> (byte_size - 1 - bit)) & 1;
                 if(j_bit == 0)
                     node = node->right;
@@ -92,10 +85,17 @@ int huffmanTree::decode_from_message(char* buffer, int encoded_message_len_bytes
                     node = node->left;
                 bit++;
             }
-            outfs.write(&node->ch, sizeof(char));
-            writed_symbols++;
-            node = root;
+            
         }
+
+        outfs.write(&node->ch, sizeof(char));
+
+        if(tree_size == 1)
+            bit++;
+        else 
+            node = root;
+ 
+        writed_symbols++;
     }
 
     return writed_symbols;

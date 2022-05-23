@@ -45,13 +45,14 @@ int main(int argc, char** argv){
 
         archiver huff;    
         
-        
+        stats huffman_stats;
         
         if(compress)
-            huff.encode(input_file, output_file);
+            huffman_stats = huff.encode(input_file, output_file);
         if(decompress)
-            huff.decode(input_file, output_file);
+            huffman_stats = huff.decode(input_file, output_file);
         
+        print_stats(huffman_stats);
     }
     catch(huffmanArchiverException& e){
         std::cerr << e.what() << '\n';

@@ -1,20 +1,24 @@
 #include "archiver.hpp"
 
-using namespace std;
-
-bool archiver::is_empty(ifstream& fs){
-    return fs.peek() == ifstream::traits_type::eof();
+void print_stats(stats& huffman_stats){
+    std::cout << std::get<0>(huffman_stats) << std::endl;
+    std::cout << std::get<1>(huffman_stats) << std::endl;
+    std::cout << std::get<2>(huffman_stats) << std::endl;
 }
 
-string archiver::read_input_text(ifstream& fs){
-    stringstream buffer;
+bool archiver::is_empty(std::ifstream& fs){
+    return fs.peek() == std::ifstream::traits_type::eof();
+}
+
+std::string archiver::read_input_text(std::ifstream& fs){
+    std::stringstream buffer;
     buffer << fs.rdbuf();
     
     return buffer.str();
 }
 
-map<char, int> archiver::create_symbols_table(string input){
-    map<char, int> symbols;
+std::map<char, int> archiver::create_symbols_table(const std::string& input){
+    std::map<char, int> symbols;
 
     for (size_t i = 0; i < input.length(); i++)    
         symbols[input[i]]++; 
@@ -22,7 +26,7 @@ map<char, int> archiver::create_symbols_table(string input){
     return symbols;
 }
 
-huffman_queue archiver::create_queue_from_table(map<char, int> symbols){
+huffman_queue archiver::create_queue_from_table(std::map<char, int>& symbols){
     huffman_queue q;
 
     for (const auto& n : symbols){
@@ -32,31 +36,33 @@ huffman_queue archiver::create_queue_from_table(map<char, int> symbols){
     return q;
 };
 
-void archiver::write_32int_byte_to_file(int num, ofstream& outfs){
-    string int_bin = bitset<32>(num).to_string();
-    int tmp = stoi(int_bin, nullptr, 2);
-    outfs.write((char*)&tmp, sizeof(int));
-}
+// void archiver::write_32int_byte_to_file(int num, std::ofstream& outfs){
+//     // std::string int_bin = std::bitset<32>(num).to_string();
+//     // int tmp = stoi(int_bin, nullptr, 2);
+//     outfs.write((char*)&num, sizeof(uint32_t));
+// }
 
-void archiver::write_8int_byte_to_file(int num, ofstream& outfs){
-    string int_bin = bitset<8>(num).to_string();
-    int tmp = stoi(int_bin, nullptr, 2);
-    outfs.write((char*)&tmp, sizeof(char));
-}
+// void archiver::write_8int_byte_to_file(int num, std::ofstream& outfs){
+//     // std::string int_bin = std::bitset<8>(num).to_string();
+//     // int tmp = stoi(int_bin, nullptr, 2);
+//     outfs.write((char*)&num, sizeof(uint8_t));
+// }
 
-int archiver::read_byte_from_file(std::ifstream& file) {
-    int8_t val;
+uint8_t archiver::read_byte_from_file(std::ifstream& file) {
+    uint8_t val;
     file.read((char*)&val, sizeof(char));
     return val;
 }
 
-int archiver::read_4byte_from_file(std::ifstream& file) {
-    int32_t val;
+uint32_t archiver::read_4byte_from_file(std::ifstream& file) {
+    uint32_t val;
     file.read((char*)&val, sizeof(int));
     return val;
 }
 
-void archiver::encode(std::string input_file, std::string output_file){
+stats archiver::encode(const std::string& input_file, const std::string& output_file){
+    stats compress_stats;
+
     std::ifstream fs(input_file, std::ios::out | std::ios::binary);
 
     if(!fs)
@@ -68,46 +74,46 @@ void archiver::encode(std::string input_file, std::string output_file){
         throw huffmanArchiverException("Output file error");
 
     if (is_empty(fs)){
-        cout << 0 << endl;
-        cout << 0 << endl;
-        cout << 0 << endl;
-        return;
+        // cout << 0 << endl;
+        // cout << 0 << endl;
+        // cout << 0 << endl;
+        return compress_stats;
     } 
 
-    string input = read_input_text(fs);
+    std::string input = read_input_text(fs);
     
-    map<char, int> symbols = create_symbols_table(input); 
+    std::map<char, int> symbols = create_symbols_table(input); 
     
     huffman_queue q = create_queue_from_table(symbols);
 
     huffmanTree tree = huffmanTree(q);
 
-    map<char, string> code;
+    std::map<char, std::string> code;
     tree.create_code(tree.get_root(), "", code);
       
-    int number_of_symbols = symbols.size();
+    uint32_t number_of_symbols = symbols.size();
 
-    write_32int_byte_to_file(number_of_symbols, outfs);
-
+    // write_32int_byte_to_file(number_of_symbols, outfs);
+    outfs.write((char*)&number_of_symbols, sizeof(uint32_t));
 
     for(const auto& n: symbols){
         outfs.write((char*)&n.first, sizeof(char)); //записали символ в int8 формате
-        write_32int_byte_to_file(n.second, outfs);  //записали его частоту в int32 формате
+        outfs.write((char*)&n.second, sizeof(uint32_t));  //записали его частоту в int32 формате
     }
 
 
     int encoded_text_len = 0;
-    string buffer;
+    std::string buffer;
 
     for(size_t i = 0; i < input.length(); i++){
-        string codestr = code[input[i]];
+        std::string codestr = code[input[i]];
         encoded_text_len += codestr.length();
         for(size_t j = 0; j < codestr.length(); j++){
             buffer += codestr[j];
 
             if(buffer.length() == byte_size){
-                int tmp = stoi(buffer, nullptr, 2);
-                outfs.write((char*)&tmp, sizeof(char));
+                uint8_t tmp = stoi(buffer, nullptr, 2);
+                outfs.write((char*)&tmp, sizeof(uint8_t));
                 buffer.clear();
             }
         }
@@ -122,23 +128,30 @@ void archiver::encode(std::string input_file, std::string output_file){
             padding_size++;
         }
 
-        int tmp = stoi(buffer, nullptr, 2);
-        outfs.write((char*)&tmp, sizeof(char));
+        uint8_t tmp = stoi(buffer, nullptr, 2);
+        outfs.write((char*)&tmp, sizeof(uint8_t));
         buffer.clear();
     }
     
-    write_8int_byte_to_file(padding_size, outfs);           //записали padding в int8 формате
+    outfs.write((char*)&padding_size, sizeof(uint8_t));   //записали padding в int8 формате
 
-    cout << input.size() << endl;                           //size of input file
-    cout << ceil((double)encoded_text_len / 8.0) << endl;   //size of coded message itself
-    cout << sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char) << endl;            
-    //size of additional info(num of symbols, symbol table, padding size)
-                                                            
-    fs.close();
-    outfs.close();
+    // cout << input.size() << endl;                           //size of input file
+    // cout << ceil((double)encoded_text_len / 8.0) << endl;   //size of coded message itself
+    // cout << sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char) << endl;            
+    // //size of additional info(num of symbols, symbol table, padding size)
+
+    int input_file_size = input.size();
+    int coded_message_size = ceil((double)encoded_text_len / 8.0);
+    int additional_data_size = sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char);
+    //num of symbols, symbol table, padding size
+    compress_stats = {input_file_size, coded_message_size, additional_data_size};
+
+    return compress_stats;
 }
 
-void archiver::decode(std::string input_file, std::string output_file){
+stats archiver::decode(const std::string& input_file, const std::string& output_file){
+    stats decompress_stats;
+
     std::ifstream fs(input_file, std::ios::out | std::ios::binary);
 
     if(!fs)
@@ -150,10 +163,10 @@ void archiver::decode(std::string input_file, std::string output_file){
         throw huffmanArchiverException("Output file error");
 
     if (is_empty(fs)){
-        cout << 0 << endl;
-        cout << 0 << endl;
-        cout << 0 << endl;
-        return;
+        // cout << 0 << endl;
+        // cout << 0 << endl;
+        // cout << 0 << endl;
+        return decompress_stats;
     } 
 
     fs.seekg(0, fs.end);
@@ -161,19 +174,19 @@ void archiver::decode(std::string input_file, std::string output_file){
     fs.seekg(0, fs.beg);
 
     fs.seekg(-1, fs.end);
-    int padding_size = read_byte_from_file(fs); //количество добавочных 0 в последнем байте encoded_message
+    uint8_t padding_size = read_byte_from_file(fs); //количество добавочных 0 в последнем байте encoded_message
     fs.seekg(0, fs.beg);
 
-    int number_of_symbols = read_4byte_from_file(fs);
+    uint32_t number_of_symbols = read_4byte_from_file(fs);
         
-    map<char, int> symbols;
+    std::map<char, int> symbols;
 
     
-    for (int i = 0; i < number_of_symbols; i++){
-        int symbol_int = read_byte_from_file(fs);
+    for (uint32_t i = 0; i < number_of_symbols; i++){
+        uint8_t symbol_int = read_byte_from_file(fs);
         char c = symbol_int;                    //символ в своём int8 формате
 
-        int symbol_freq = read_4byte_from_file(fs);
+        uint32_t symbol_freq = read_4byte_from_file(fs);
         symbols[c] = symbol_freq;
     }
 
@@ -189,10 +202,12 @@ void archiver::decode(std::string input_file, std::string output_file){
 
     int writed_symbols = tree.decode_from_message(buffer, encoded_message_len_bytes, padding_size, outfs);
 
-    cout << encoded_message_len_bytes << endl;
-    cout << writed_symbols << endl;
-    cout << sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char) << endl;
-    
-    fs.close();
-    outfs.close();
+    // cout << encoded_message_len_bytes << endl;
+    // cout << writed_symbols << endl;
+    // cout << sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char) << endl;
+    int additional_data_size = sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char);
+
+    decompress_stats = {encoded_message_len_bytes, writed_symbols, additional_data_size};
+
+    return decompress_stats;
 }

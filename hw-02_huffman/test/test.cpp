@@ -22,59 +22,76 @@ inline void delete_test_files() {
 
 TEST_CASE("Compare decoded file and original file"){
     archiver huff;
+    stats compress_stats, decompress_stats;
 
     SUBCASE("empty file"){
-        huff.encode("samples/empty.txt", "samples/compressed.bin");
-        huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        compress_stats = huff.encode("samples/empty.txt", "samples/compressed.bin");
+        decompress_stats = huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        print_stats(compress_stats);
+        print_stats(decompress_stats);
         CHECK(exec("diff samples/empty.txt samples/decoded_original.txt") == "");
         delete_test_files();
     }
 
     SUBCASE("one symbol file"){
-        huff.encode("samples/one.txt", "samples/compressed.bin");
-        huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        compress_stats = huff.encode("samples/one.txt", "samples/compressed.bin");
+        decompress_stats = huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        print_stats(compress_stats);
+        print_stats(decompress_stats);
         CHECK(exec("diff samples/one.txt samples/decoded_original.txt") == "");
         delete_test_files();
     }
     
     SUBCASE("simple file"){
-        huff.encode("samples/simple.txt", "samples/compressed.bin");
-        huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        compress_stats = huff.encode("samples/simple.txt", "samples/compressed.bin");
+        decompress_stats = huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        print_stats(compress_stats);
+        print_stats(decompress_stats);
         CHECK(exec("diff samples/simple.txt samples/decoded_original.txt") == "");
         delete_test_files();
     }
     
     SUBCASE("song file"){
-        huff.encode("samples/song.txt", "samples/compressed.bin");
-        huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        compress_stats = huff.encode("samples/song.txt", "samples/compressed.bin");
+        decompress_stats = huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        print_stats(compress_stats);
+        print_stats(decompress_stats);
         CHECK(exec("diff samples/song.txt samples/decoded_original.txt") == "");
         delete_test_files();
     }
     
     SUBCASE("russian file"){
-        huff.encode("samples/russian.txt", "samples/compressed.bin");
-        huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        compress_stats = huff.encode("samples/russian.txt", "samples/compressed.bin");
+        decompress_stats = huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        print_stats(compress_stats);
+        print_stats(decompress_stats);
         CHECK(exec("diff samples/russian.txt samples/decoded_original.txt") == "");
         delete_test_files();
     }
     
     SUBCASE("big frequency file"){
-        huff.encode("samples/bigfreq.txt", "samples/compressed.bin");
-        huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        compress_stats = huff.encode("samples/bigfreq.txt", "samples/compressed.bin");
+        decompress_stats = huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        print_stats(compress_stats);
+        print_stats(decompress_stats);
         CHECK(exec("diff samples/bigfreq.txt samples/decoded_original.txt") == "");
         delete_test_files();
     }
 
     SUBCASE("all ascii symbols file"){
-        huff.encode("samples/allascii.txt", "samples/compressed.bin");
-        huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        compress_stats = huff.encode("samples/allascii.txt", "samples/compressed.bin");
+        decompress_stats = huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        print_stats(compress_stats);
+        print_stats(decompress_stats);
         CHECK(exec("diff samples/allascii.txt samples/decoded_original.txt") == "");
         delete_test_files();
     }
 
     SUBCASE("big file"){
-        huff.encode("samples/big.txt", "samples/compressed.bin");
-        huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        compress_stats = huff.encode("samples/big.txt", "samples/compressed.bin");
+        decompress_stats = huff.decode("samples/compressed.bin", "samples/decoded_original.txt");
+        print_stats(compress_stats);
+        print_stats(decompress_stats);
         CHECK(exec("diff samples/big.txt samples/decoded_original.txt") == "");
         delete_test_files();
     }
