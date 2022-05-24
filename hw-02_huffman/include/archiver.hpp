@@ -27,7 +27,7 @@ class archiver{
         std::string read_input_text(std::ifstream& fs);
         
         std::map<char, int> create_symbols_table(const std::string& input);
-        huffman_queue create_queue_from_table(std::map<char, int>& symbols);
+        huffmanQueue create_queue_from_table(std::map<char, int>& symbols);
 
         // void write_32int_byte_to_file(int num, std::ofstream& outfs);
         // void write_8int_byte_to_file(int num, std::ofstream& outfs);

@@ -26,8 +26,8 @@ std::map<char, int> archiver::create_symbols_table(const std::string& input){
     return symbols;
 }
 
-huffman_queue archiver::create_queue_from_table(std::map<char, int>& symbols){
-    huffman_queue q;
+huffmanQueue archiver::create_queue_from_table(std::map<char, int>& symbols){
+    huffmanQueue q;
 
     for (const auto& n : symbols){
         huffmanNode* node = new huffmanNode(n.first, n.second);
@@ -84,7 +84,7 @@ stats archiver::encode(const std::string& input_file, const std::string& output_
     
     std::map<char, int> symbols = create_symbols_table(input); 
     
-    huffman_queue q = create_queue_from_table(symbols);
+    huffmanQueue q = create_queue_from_table(symbols);
 
     huffmanTree tree = huffmanTree(q);
 
@@ -190,7 +190,7 @@ stats archiver::decode(const std::string& input_file, const std::string& output_
         symbols[c] = symbol_freq;
     }
 
-    huffman_queue q = create_queue_from_table(symbols);
+    huffmanQueue q = create_queue_from_table(symbols);
     huffmanTree tree = huffmanTree(q);
 
     int encoded_message_len_bytes = filelength - (sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char));

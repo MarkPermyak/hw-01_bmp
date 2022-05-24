@@ -11,6 +11,13 @@ struct huffmanNode{
     char ch;
     int freq;
 
+    huffmanNode(){
+        ch = '\0';
+        freq = 0;
+        left = nullptr;
+        right = nullptr;
+    }
+
     huffmanNode(char ch_, int freq_){
         ch = ch_;
         freq = freq_;
@@ -31,11 +38,11 @@ struct nodeComparator {
     }
 };
 
-typedef std::priority_queue<huffmanNode*, std::vector<huffmanNode*>, nodeComparator> huffman_queue;
+typedef std::priority_queue<huffmanNode*, std::vector<huffmanNode*>, nodeComparator> huffmanQueue;
 
 class huffmanTree{
 public:
-    huffmanTree(huffman_queue& q);
+    huffmanTree(huffmanQueue& q);
     ~huffmanTree();
 
     int get_size();

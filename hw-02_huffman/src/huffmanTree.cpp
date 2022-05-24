@@ -1,7 +1,7 @@
 #include "huffmanTree.hpp"
 #include "archiver.hpp"
 
-huffmanTree::huffmanTree(huffman_queue& q){
+huffmanTree::huffmanTree(huffmanQueue& q){
     while (q.size() != 1){
         huffmanNode* rnode = q.top();
         q.pop();
