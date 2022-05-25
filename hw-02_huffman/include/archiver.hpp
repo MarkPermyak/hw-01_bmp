@@ -19,7 +19,6 @@ class archiver{
         stats encode(const std::string& input_file, const std::string& output_file);
         stats decode(const std::string& input_file, const std::string& output_file);
 
-    private:
         const size_t byte_size = 8;
 
         bool is_empty(std::ifstream& fs);
@@ -29,8 +28,6 @@ class archiver{
         std::map<char, int> create_symbols_table(const std::string& input);
         huffmanQueue create_queue_from_table(std::map<char, int>& symbols);
 
-        // void write_32int_byte_to_file(int num, std::ofstream& outfs);
-        // void write_8int_byte_to_file(int num, std::ofstream& outfs);
         uint8_t read_byte_from_file(std::ifstream& file);
         uint32_t read_4byte_from_file(std::ifstream& file);
 

@@ -8,7 +8,6 @@ huffmanTree::huffmanTree(huffmanQueue& q){
         huffmanNode* lnode = q.top();
         q.pop();
         
-
         huffmanNode* parent = new huffmanNode('\0', rnode->freq + lnode->freq);
         tree_size++;
         parent->left = lnode;

@@ -20,7 +20,7 @@ inline void delete_test_files() {
     exec("rm samples/decoded_original.txt");
 }
 
-TEST_CASE("Test classes"){
+TEST_CASE("Test classes and methods"){
     SUBCASE("node struct"){
         huffmanNode* v1 = new huffmanNode;
         huffmanNode* v2 = new huffmanNode('k', 239);
@@ -48,33 +48,122 @@ TEST_CASE("Test classes"){
         delete v3, v2, v1;
     }
 
-    // SUBCASE("huffman tree"){
-    //     // std::map<char, int> symbols { {'a', 10}, {'s', 0}, {'d', 9}, {'f', 3}};
-    //     huffmanNode* v1 = new huffmanNode('a', 9);
-    //     huffmanNode* v2 = new huffmanNode('s', 239);
-    //     huffmanNode* v3 = new huffmanNode('d', 35);
-    //     huffmanNode* v4 = new huffmanNode('f', 10);
+    SUBCASE("huffman queue: regular"){
+        archiver huff;
         
-    //     huffmanQueue q;
-    //     q.push(v1); q.push(v2); q.push(v3); q.push(v4);
-
-    //     huffmanTree tree = huffmanTree(q);
-    //     CHECK(tree.get_size() == 4);
-    //     CHECK(tree.get_root()->ch == '\0');
-    //     CHECK(tree.get_root()->freq == 293);
-    //     CHECK(tree.get_root()->left == v2);
-    //     CHECK(tree.get_root()->right->left == v3);
-
-    //     std::map<char, std::string> code;
-    //     REQUIRE_NOTHROW(tree.create_code(tree.get_root(), "", code));
-
-    //     CHECK(code['a'] == "000");
-    //     CHECK(code['s'] == "1");
-    //     CHECK(code['d'] == "01");
-    //     CHECK(code['f'] == "001");
+        huffmanNode* v1 = new huffmanNode('a', 3);
+        huffmanNode* v2 = new huffmanNode('s', 4);
+        huffmanNode* v3 = new huffmanNode('d', 5);
+        huffmanNode* v4 = new huffmanNode('f', 1);
         
-    //     delete v4, v3, v2, v1;
-    // }
+        huffmanQueue q1 = {};
+        q1.push(v1); q1.push(v2); q1.push(v3); q1.push(v4);
+
+        std::map<char, int> symbols { {'a', 3}, {'s', 4}, {'d', 5}, {'f', 1}};               
+        huffmanQueue q2 = huff.create_queue_from_table(symbols);
+        
+         for (int i = 0; i < 4; i++){
+                CHECK(q1.top()->freq == q2.top()->freq);
+                CHECK(q1.top()->ch == q2.top()->ch);
+                q1.pop();
+                q2.pop();
+        }
+   
+        delete v4, v3, v2, v1;
+    }
+    SUBCASE("huffman queue: one symbol"){
+        archiver huff;
+    
+        huffmanNode* v1 = new huffmanNode('x', 6);
+         
+        huffmanQueue q1 = {};
+        q1.push(v1);
+        
+        std::map<char, int> symbols { {'x', 6} };
+        
+        huffmanQueue q2 = huff.create_queue_from_table(symbols);
+        
+     
+        CHECK(q1.top()->freq == q2.top()->freq);
+        CHECK(q1.top()->ch == q2.top()->ch);
+        q1.pop();
+        q2.pop();
+
+        delete v1;
+    }
+
+    SUBCASE("huffman tree: regular"){
+        archiver huff;
+
+        huffmanNode* v1 = new huffmanNode('a', 3);
+        huffmanNode* v2 = new huffmanNode('s', 4);
+        huffmanNode* v3 = new huffmanNode('d', 5);
+        huffmanNode* v4 = new huffmanNode('f', 1);
+        
+        huffmanQueue q1 = {};
+        q1.push(v1); q1.push(v2); q1.push(v3); q1.push(v4);
+
+        huffmanTree tree(q1);
+                
+        CHECK(tree.get_size() == 4);
+        CHECK(tree.get_root()->ch == '\0');
+        CHECK(tree.get_root()->freq == 13);
+        CHECK(tree.get_root()->right == v3);
+        CHECK(tree.get_root()->left->right == v2);
+        
+        std::map<char, std::string> code;
+        tree.create_code(tree.get_root(), "", code);
+
+        CHECK(code['a'] == "111");
+        CHECK(code['s'] == "10");
+        CHECK(code['d'] == "0");
+        CHECK(code['f'] == "110");
+
+    }
+    
+    SUBCASE("archiver"){
+        archiver huff;
+        std::ifstream fs("samples/reading_tests/input.txt", std::ios::out | std::ios::binary);
+
+        SUBCASE("reading bytes"){
+
+
+            exec("echo hello > samples/reading_tests/input.txt");
+            // hello = 01101000 01100101 01101100 01101100 01101111
+            CHECK(huff.read_byte_from_file(fs) == 104); // 01101000 = 104
+            CHECK(huff.read_byte_from_file(fs) == 101); // etc.
+            CHECK(huff.read_byte_from_file(fs) == 108);
+            CHECK(huff.read_byte_from_file(fs) == 108);
+            CHECK(huff.read_byte_from_file(fs) == 111);
+
+        }
+
+        SUBCASE("reading 4bytes"){
+            std::ifstream fs("samples/reading_tests/input.txt", std::ios::out | std::ios::binary);
+
+            exec("echo rikimaru > samples/reading_tests/input.txt");
+            // rikimaru = 01110010 01101001 01101011 01101001 01101101 01100001 01110010 01110101
+            CHECK(huff.read_4byte_from_file(fs) == 1768647026);
+            //1768647026 = 01101001 01101011 01101001 01110010 because write() and read() work that way
+            CHECK(huff.read_4byte_from_file(fs) == 1970430317);
+        }
+
+        SUBCASE("creating symbols table"){
+
+            std::ifstream fs("samples/reading_tests/input.txt", std::ios::out | std::ios::binary);
+            exec("echo -n never gonna let you down > samples/reading_tests/input.txt");
+            
+            std::string input = huff.read_input_text(fs);
+            CHECK(input == "never gonna let you down");
+
+            std::map<char, int> expected{{' ', 4}, {'a', 1}, {'d', 1}, {'e', 3}, {'g', 1}, 
+            {'l', 1}, {'n', 4}, {'o', 3}, {'r', 1}, {'t', 1}, {'u', 1}, {'v', 1}, {'w', 1}, {'y', 1}};
+            
+            std::map<char, int> symbols = huff.create_symbols_table(input);
+
+            CHECK(symbols == expected);
+        }
+    }
 }
 
 TEST_CASE("Compare decoded file and original file"){

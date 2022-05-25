@@ -36,18 +36,6 @@ huffmanQueue archiver::create_queue_from_table(std::map<char, int>& symbols){
     return q;
 };
 
-// void archiver::write_32int_byte_to_file(int num, std::ofstream& outfs){
-//     // std::string int_bin = std::bitset<32>(num).to_string();
-//     // int tmp = stoi(int_bin, nullptr, 2);
-//     outfs.write((char*)&num, sizeof(uint32_t));
-// }
-
-// void archiver::write_8int_byte_to_file(int num, std::ofstream& outfs){
-//     // std::string int_bin = std::bitset<8>(num).to_string();
-//     // int tmp = stoi(int_bin, nullptr, 2);
-//     outfs.write((char*)&num, sizeof(uint8_t));
-// }
-
 uint8_t archiver::read_byte_from_file(std::ifstream& file) {
     uint8_t val;
     file.read((char*)&val, sizeof(char));
@@ -73,17 +61,18 @@ stats archiver::encode(const std::string& input_file, const std::string& output_
     if(!outfs)
         throw huffmanArchiverException("Output file error");
 
-    if (is_empty(fs)){
-        // cout << 0 << endl;
-        // cout << 0 << endl;
-        // cout << 0 << endl;
+    if (is_empty(fs))
         return compress_stats;
-    } 
+    
 
     std::string input = read_input_text(fs);
     
     std::map<char, int> symbols = create_symbols_table(input); 
     
+        for(const auto& n: symbols){
+            std::cout << "{'" << n.first << "', " << n.second << "}, " ;
+        }
+
     huffmanQueue q = create_queue_from_table(symbols);
 
     huffmanTree tree = huffmanTree(q);
@@ -93,7 +82,6 @@ stats archiver::encode(const std::string& input_file, const std::string& output_
       
     uint32_t number_of_symbols = symbols.size();
 
-    // write_32int_byte_to_file(number_of_symbols, outfs);
     outfs.write((char*)&number_of_symbols, sizeof(uint32_t));
 
     for(const auto& n: symbols){
@@ -102,7 +90,7 @@ stats archiver::encode(const std::string& input_file, const std::string& output_
     }
 
 
-    int encoded_text_len = 0;
+    uint32_t encoded_text_len = 0;
     std::string buffer;
 
     for(size_t i = 0; i < input.length(); i++){
@@ -120,7 +108,7 @@ stats archiver::encode(const std::string& input_file, const std::string& output_
 
     }
     
-    int padding_size = 0;
+    uint8_t padding_size = 0;
 
     if (buffer.length() % byte_size != 0){
         while(buffer.length() != byte_size){
@@ -135,14 +123,9 @@ stats archiver::encode(const std::string& input_file, const std::string& output_
     
     outfs.write((char*)&padding_size, sizeof(uint8_t));   //записали padding в int8 формате
 
-    // cout << input.size() << endl;                           //size of input file
-    // cout << ceil((double)encoded_text_len / 8.0) << endl;   //size of coded message itself
-    // cout << sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char) << endl;            
-    // //size of additional info(num of symbols, symbol table, padding size)
-
-    int input_file_size = input.size();
-    int coded_message_size = ceil((double)encoded_text_len / 8.0);
-    int additional_data_size = sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char);
+    uint32_t input_file_size = input.size();
+    uint32_t coded_message_size = ceil((double)encoded_text_len / 8.0);
+    uint32_t additional_data_size = sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char);
     //num of symbols, symbol table, padding size
     compress_stats = {input_file_size, coded_message_size, additional_data_size};
 
@@ -162,15 +145,12 @@ stats archiver::decode(const std::string& input_file, const std::string& output_
     if(!outfs)
         throw huffmanArchiverException("Output file error");
 
-    if (is_empty(fs)){
-        // cout << 0 << endl;
-        // cout << 0 << endl;
-        // cout << 0 << endl;
+    if (is_empty(fs)) 
         return decompress_stats;
-    } 
+    
 
     fs.seekg(0, fs.end);
-    int filelength = fs.tellg();
+    uint32_t filelength = fs.tellg();
     fs.seekg(0, fs.beg);
 
     fs.seekg(-1, fs.end);
@@ -191,21 +171,17 @@ stats archiver::decode(const std::string& input_file, const std::string& output_
     }
 
     huffmanQueue q = create_queue_from_table(symbols);
-    huffmanTree tree = huffmanTree(q);
+    huffmanTree tree(q);
 
-    int encoded_message_len_bytes = filelength - (sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char));
+    uint32_t encoded_message_len_bytes = filelength - (sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char));
     //1 byte for number of symbols, 2*number_of_symbols bytes for table, 1 byte for padding size
 
     char buffer[encoded_message_len_bytes];
 
     fs.read(buffer, encoded_message_len_bytes);
 
-    int writed_symbols = tree.decode_from_message(buffer, encoded_message_len_bytes, padding_size, outfs);
-
-    // cout << encoded_message_len_bytes << endl;
-    // cout << writed_symbols << endl;
-    // cout << sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char) << endl;
-    int additional_data_size = sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char);
+    uint32_t writed_symbols = tree.decode_from_message(buffer, encoded_message_len_bytes, padding_size, outfs);
+    uint32_t additional_data_size = sizeof(int) + number_of_symbols * (sizeof(char) + sizeof(int)) + sizeof(char);
 
     decompress_stats = {encoded_message_len_bytes, writed_symbols, additional_data_size};
 

@@ -33,7 +33,7 @@ struct huffmanNode{
 
 
 struct nodeComparator {
-    bool operator()(huffmanNode *a, huffmanNode *b) {
+    bool operator()(const huffmanNode *a, const huffmanNode *b) {
         return a->freq > b->freq;
     }
 };
