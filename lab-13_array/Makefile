@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -O2 -Wall -Werror -std=c++17 -Iinclude
 LDFLAGS = 
 
-EXE = lab-13
+EXE = lab-13_array
 SRCDIR = src
 OBJDIR = obj
 
