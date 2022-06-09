@@ -46,11 +46,11 @@ private:
 	T _data[N]{};
 };
 
-bool get_bit(uint8_t value, std::size_t index) {
+static bool get_bit(uint8_t value, std::size_t index) {
 	return (value >> index) & 1;
 }
 
-void set_bit(uint8_t& value, std::size_t index, bool new_bit) {
+static void set_bit(uint8_t& value, std::size_t index, bool new_bit) {
 	if (get_bit(value, index) != new_bit)
 		value ^= 1 << index;
 }
