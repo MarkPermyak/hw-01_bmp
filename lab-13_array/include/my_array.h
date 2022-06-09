@@ -46,26 +46,10 @@ private:
 	T _data[N]{};
 };
 
-static bool get_bit(uint8_t value, std::size_t index) {
-	return (value >> index) & 1;
-}
-
-static void set_bit(uint8_t& value, std::size_t index, bool new_bit) {
-	if (get_bit(value, index) != new_bit)
-		value ^= 1 << index;
-}
 
 template<std::size_t N>
 class my_array<bool, N> {
 public:
-
-	std::size_t size() const {
-		return N; 
-	}
-
-	bool empty() const {
-		return size() == 0;
-	}
 
 	class bool_reference {
 	public:
@@ -90,6 +74,14 @@ public:
 		uint8_t& block_value;
 		std::size_t position_in_block; 
 	};
+
+	std::size_t size() const {
+		return N; 
+	}
+
+	bool empty() const {
+		return size() == 0;
+	}
 
 	bool_reference operator[](std::size_t index) {
 		return bool_reference(_data[get_block_id(index)], get_position_in_block(index));
@@ -123,6 +115,15 @@ private:
 
 	static std::size_t get_position_in_block(std::size_t index) {
 		return index % BITS_IN_BLOCK;
+	}
+
+	static bool get_bit(uint8_t value, std::size_t index) {
+		return (value >> index) & 1;
+	}
+
+	static void set_bit(uint8_t& value, std::size_t index, bool new_bit) {
+		if (get_bit(value, index) != new_bit)
+			value ^= 1 << index;
 	}
 
 	//size of _data is the minimum x such that BITS_IN_BLOCK * x >= N
