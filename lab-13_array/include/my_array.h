@@ -115,17 +115,17 @@ public:
 	}
 
 private:
-	const std::size_t BITS_IN_BLOCK = 8;
+	static const std::size_t BITS_IN_BLOCK = 8;
 
-	std::size_t get_block_id(std::size_t index) {
+	static std::size_t get_block_id(std::size_t index) {
 		return index / BITS_IN_BLOCK;
 	}
 
-	std::size_t get_position_in_block(std::size_t index) {
+	static std::size_t get_position_in_block(std::size_t index) {
 		return index % BITS_IN_BLOCK;
 	}
 
-	//minimum x such that BITS_IN_BLOCK * x >= N
+	//size of _data is the minimum x such that BITS_IN_BLOCK * x >= N
 	my_array<uint8_t, (N + BITS_IN_BLOCK - 1) / BITS_IN_BLOCK> _data;  	
 };
 
